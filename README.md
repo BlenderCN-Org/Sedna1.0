@@ -1,4 +1,4 @@
-# Sedna セドナ
+# Sedna 1.0 セドナ 1.0
 ## beta-version Classic-Animation-Like-3DCG development envilonment
 ## β版 セルアニメ風動画 開発環境  
 
