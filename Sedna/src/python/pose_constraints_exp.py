@@ -10,7 +10,7 @@ import utils_log
 import utils_io_csv
 
 # Constants
-WORK_FILE_NAME = "pose_constraints.csv"
+WORK_FILE_NAME = "pose_constraints_tail.csv"
 
 # init logger
 global logger
@@ -43,7 +43,11 @@ header = [
         "to_min_z",
         "to_max_z",
         "target_space",
-        "owner_space"
+        "owner_space",
+        "influence",
+        "type",
+        "head_tail",
+        "use_offset"
           ]
 bone_data.append(header)
 
@@ -92,6 +96,42 @@ for x in bpy.context.selected_pose_bones:
                 data_row.append(y.to_max_z_scale)
             data_row.append(y.target_space)
             data_row.append(y.owner_space)
+            data_row.append(y.influence)
+            data_row.append(y.type)
+            
+            bone_data.append(data_row)        
+        elif y.type == "COPY_LOCATION":
+            print(x.name + ", " + y.name)
+            data_row = []
+            data_row.append(x.name)
+            data_row.append(y.name)
+            data_row.append(y.mute)
+            data_row.append(y.target.name)
+            data_row.append(y.subtarget)
+            data_row.append("")
+            data_row.append(y.use_x)
+            data_row.append(y.invert_x)
+            data_row.append(y.use_y)
+            data_row.append(y.invert_y)
+            data_row.append(y.use_z)
+            data_row.append(y.invert_z)
+            data_row.append("")
+            data_row.append("")
+            data_row.append("")
+            data_row.append("")
+            data_row.append("")
+            data_row.append("")
+            data_row.append("")
+            data_row.append("")
+            data_row.append("")
+            data_row.append("")
+            data_row.append(y.target_space)
+            data_row.append(y.owner_space)
+            data_row.append(y.influence)
+            data_row.append(y.type)
+            data_row.append(y.head_tail)
+            data_row.append(y.use_offset)
+            
             bone_data.append(data_row)
 
 utils_io_csv.write(WORK_FILE_NAME, bone_data)

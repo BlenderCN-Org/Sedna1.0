@@ -10,7 +10,7 @@ import utils_log
 import utils_io_csv
 
 # Constants
-WORK_FILE_NAME = "pose_constraints.csv"
+WORK_FILE_NAME = "pose_constraints_tail.csv"
 
 BONE_NAME = 0 
 CONSTRAINT_NAME = 1
@@ -36,6 +36,10 @@ TO_MIN_Z = 20
 TO_MAX_Z = 21
 TARGET_SPACE = 22
 OWNER_SPACE = 23
+INFLUENCE = 24
+TYPE = 25
+HEAD_TAIL = 26
+USE_OFFSET = 27
 
 # init logger
 global logger
@@ -53,7 +57,7 @@ def imp(target):
         bone = bpy.data.objects[target].pose.bones[row[BONE_NAME]]
         
         if bone.constraints.find(row[CONSTRAINT_NAME]) == -1:
-            constraint = bone.constraints.new(type="TRANSFORM")
+            constraint = bone.constraints.new(type=row[TYPE])
             constraint.name = row[CONSTRAINT_NAME]
         
         constraint = bone.constraints[row[CONSTRAINT_NAME]]
@@ -63,44 +67,56 @@ def imp(target):
         constraint.mute = row[MUTE] == "True"
         constraint.target = bpy.data.objects[target]
         constraint.subtarget = row[SUBTARGET_BONE_NAME]
-        constraint.use_motion_extrapolate = row[EXTRAPOLATE] == "True"
         
-        constraint.from_min_x = float(row[FROM_MIN_X])
-        constraint.from_max_x = float(row[FROM_MAX_X])
-        constraint.from_min_y = float(row[FROM_MIN_Y])
-        constraint.from_max_y = float(row[FROM_MAX_Y])
-        constraint.from_min_z = float(row[FROM_MIN_Z])
-        constraint.from_max_z = float(row[FROM_MAX_Z])
-        
-        constraint.map_to_x_from = row[MAP_TO_X_FROM]
-        constraint.map_to_y_from = row[MAP_TO_Y_FROM]
-        constraint.map_to_z_from = row[MAP_TO_Z_FROM]
-        constraint.map_to = row[MAP_TO]
-        if constraint.map_to == "LOCATION":
-            constraint.to_min_x = float(row[TO_MIN_X])
-            constraint.to_max_x = float(row[TO_MAX_X])
-            constraint.to_min_y = float(row[TO_MIN_Y])
-            constraint.to_max_y = float(row[TO_MAX_Y])
-            constraint.to_min_z = float(row[TO_MIN_Z])
-            constraint.to_max_z = float(row[TO_MAX_Z])
-        elif constraint.map_to == "ROTATION":
-            constraint.to_min_x_rot = float(row[TO_MIN_X])
-            constraint.to_max_x_rot = float(row[TO_MAX_X])
-            constraint.to_min_y_rot = float(row[TO_MIN_Y])
-            constraint.to_max_y_rot = float(row[TO_MAX_Y])
-            constraint.to_min_z_rot = float(row[TO_MIN_Z])
-            constraint.to_max_z_rot = float(row[TO_MAX_Z])
-        else:
-            # map_to:SCALE
-            constraint.to_min_x_scale = float(row[TO_MIN_X])
-            constraint.to_max_x_scale = float(row[TO_MAX_X])
-            constraint.to_min_y_scale = float(row[TO_MIN_Y])
-            constraint.to_max_y_scale = float(row[TO_MAX_Y])
-            constraint.to_min_z_scale = float(row[TO_MIN_Z])
-            constraint.to_max_z_scale = float(row[TO_MAX_Z])
+        if row[TYPE] == "TRANSFORM":
+            constraint.use_motion_extrapolate = row[EXTRAPOLATE] == "True"
+            
+            constraint.from_min_x = float(row[FROM_MIN_X])
+            constraint.from_max_x = float(row[FROM_MAX_X])
+            constraint.from_min_y = float(row[FROM_MIN_Y])
+            constraint.from_max_y = float(row[FROM_MAX_Y])
+            constraint.from_min_z = float(row[FROM_MIN_Z])
+            constraint.from_max_z = float(row[FROM_MAX_Z])
+            
+            constraint.map_to_x_from = row[MAP_TO_X_FROM]
+            constraint.map_to_y_from = row[MAP_TO_Y_FROM]
+            constraint.map_to_z_from = row[MAP_TO_Z_FROM]
+            constraint.map_to = row[MAP_TO]
+            if constraint.map_to == "LOCATION":
+                constraint.to_min_x = float(row[TO_MIN_X])
+                constraint.to_max_x = float(row[TO_MAX_X])
+                constraint.to_min_y = float(row[TO_MIN_Y])
+                constraint.to_max_y = float(row[TO_MAX_Y])
+                constraint.to_min_z = float(row[TO_MIN_Z])
+                constraint.to_max_z = float(row[TO_MAX_Z])
+            elif constraint.map_to == "ROTATION":
+                constraint.to_min_x_rot = float(row[TO_MIN_X])
+                constraint.to_max_x_rot = float(row[TO_MAX_X])
+                constraint.to_min_y_rot = float(row[TO_MIN_Y])
+                constraint.to_max_y_rot = float(row[TO_MAX_Y])
+                constraint.to_min_z_rot = float(row[TO_MIN_Z])
+                constraint.to_max_z_rot = float(row[TO_MAX_Z])
+            else:
+                # map_to:SCALE
+                constraint.to_min_x_scale = float(row[TO_MIN_X])
+                constraint.to_max_x_scale = float(row[TO_MAX_X])
+                constraint.to_min_y_scale = float(row[TO_MIN_Y])
+                constraint.to_max_y_scale = float(row[TO_MAX_Y])
+                constraint.to_min_z_scale = float(row[TO_MIN_Z])
+                constraint.to_max_z_scale = float(row[TO_MAX_Z])
+        elif row[TYPE] == "COPY_LOCATION":
+            constraint.use_x = row[FROM_MIN_X] == "True"
+            constraint.invert_x = row[FROM_MAX_X] == "True"
+            constraint.use_y = row[FROM_MIN_Y] == "True"
+            constraint.invert_y = row[FROM_MAX_Y] == "True"
+            constraint.use_z = row[FROM_MIN_Z] == "True"
+            constraint.invert_z = row[FROM_MAX_Z] == "True"
+            constraint.head_tail = float(row[HEAD_TAIL])
+            constraint.use_offset = row[USE_OFFSET] == "True"
 
         constraint.target_space = row[TARGET_SPACE]
         constraint.owner_space = row[OWNER_SPACE]
+        constraint.influence = float(row[INFLUENCE])
 
 logger = utils_log.Util_Log(os.path.basename(__file__))
 
