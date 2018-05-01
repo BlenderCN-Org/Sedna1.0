@@ -25,3 +25,4 @@ Sedna/src/python/__pycache__/*
 Sedna/BackGrounds.blend1
 *.blend1
 Sedna/src/python/plugins/test/skelton.py
+Sedna/data/pose_constraints_tail.csv
