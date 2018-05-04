@@ -25,4 +25,5 @@ install:
   - cp testee.py blender-2.79b-linux-glibc219-x86_64/2.79/scripts/addons/testee.py
 
 # ★テスト実行
-script: blender-2.79b-linux-glibc219-x86_64/blender -noaudio --factory-startup --background --addons testee --python test.py
+script: blender-2.79b-linux-glibc219-x86_64/blender -noaudio --factory-startup --background --addons Sedna/src/python/addons/testee --python Sedna/src/python/addons/test.py
+
