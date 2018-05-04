@@ -20,10 +20,10 @@ install:
   # ★最新版のBlenderをダウンロード
   - wget http://mirror.cs.umn.edu/blender.org/release/Blender2.79/blender-2.79b-linux-glibc219-x86_64.tar.bz2
   # ★ダウンロードしたBlenderを解凍
-  - tar blender-2.79b-linux-glibc219-x86_64.tar.bz2
+  - tar jxf blender-2.79b-linux-glibc219-x86_64.tar.bz2
   # ★アドオンをインストール（Blenderのバージョンに合わせて、ディレクトリを指定）
-  - cp testee.py blender-2.79b-linux-glibc219-x86_64/2.79/scripts/addons/testee.py
+  - cp Sedna/src/python/addons/testee.py blender-2.79b-linux-glibc219-x86_64/2.79/scripts/addons/testee.py
 
 # ★テスト実行
-script: blender-2.79b-linux-glibc219-x86_64/blender -noaudio --factory-startup --background --addons Sedna/src/python/addons/testee --python Sedna/src/python/addons/test.py
+script: blender-2.79b-linux-glibc219-x86_64/blender -noaudio --factory-startup --background --addons testee --python Sedna/src/python/addons/test.py
 
