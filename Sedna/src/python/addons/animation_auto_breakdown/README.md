@@ -23,7 +23,11 @@
 
 後日作成予定
 
+## 機能一覧
+* 自動ひねり
+* 自動中割り
 
 ## License ライセンス
-MIT
+This software is released under the MIT License, see License.txt.
+このソフトウェアは、MITライセンスのもとで公開されている。License.txtを見てください。
 
