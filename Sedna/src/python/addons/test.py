@@ -12,6 +12,10 @@ if __name__ == "__main__":
         assert bpy.ops.object.test_ops_2 != None, "test_ops_2 is not enabled."
         result = bpy.ops.object.test_ops_2()
         assert result == {'FINISHED'}, "test_ops_2 have error."
+        ## bl_name = object.test_ops_3(存在しない) のテスト
+        #assert bpy.ops.object.test_ops_3 != None, "test_ops_3 is not enabled."
+        #result = bpy.ops.object.test_ops_3()
+        #assert result == {'FINISHED'}, "test_ops_3 have error."
     # テスト失敗時の処理
     except AssertionError as e:
         print(e)        # テストが失敗した原因（assert文の第2引数）を表示
