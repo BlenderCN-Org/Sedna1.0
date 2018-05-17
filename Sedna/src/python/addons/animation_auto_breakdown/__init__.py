@@ -1,5 +1,3 @@
-﻿import bpy
-
 
 bl_info = {
     "name": "Auto Breakdown",
@@ -30,6 +28,16 @@ translation_dict = {
             "自動中割り: アドオン「自動中割り」が無効化されました。"
     }
 }
+
+if "bpy" in locals():
+    import imp
+    imp.reload(auto_twist)
+    imp.reload(auto_breakdown)
+else:
+    from . import auto_twist
+    from . import auto_breakdown
+
+import bpy
 
 class TestOps1(bpy.types.Operator):
 
