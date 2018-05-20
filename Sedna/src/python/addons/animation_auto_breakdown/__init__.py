@@ -19,13 +19,33 @@ translation_dict = {
         ("*", "Auto Breakdown: Enabled add-on 'Auto Breakdown'"):
             "Auto Breakdown: Enabled add-on 'Auto Breakdown'",
         ("*", "Auto Breakdown: Disabled add-on 'Auto Breakdown'"):
-            "Auto Breakdown: Disabled add-on 'Auto Breakdown'"
+            "Auto Breakdown: Disabled add-on 'Auto Breakdown'",
+        ("*", "Auto Breakdown"):
+            "Auto Breakdown",
+        ("*", "Overwrite Data"):
+            "Overwrite Data",
+        ("*", "Export Pose"):
+            "Export Pose",
+        ("*", "Emotion"):
+            "Emotion",
+        ("*", "Character Name:"):
+            "Character Name:"
     },
     "ja_JP": {
         ("*", "Auto Breakdown: Enabled add-on 'Auto Breakdown'"):
             "自動中割り: アドオン「自動中割り」が有効化されました。",
         ("*", "Auto Breakdown: Disabled add-on 'testee'"):
-            "自動中割り: アドオン「自動中割り」が無効化されました。"
+            "自動中割り: アドオン「自動中割り」が無効化されました。",
+        ("*", "Auto Breakdown"):
+            "自動中割り",
+        ("*", "Overwrite Data"):
+            "データ上書き",
+        ("*", "Export Pose"):
+            "ポーズ抽出",
+        ("*", "Emotion"):
+            "感情",
+        ("*", "Character Name:"):
+            "キャラクター名："
     }
 }
 
@@ -33,9 +53,11 @@ if "bpy" in locals():
     import imp
     imp.reload(auto_twist)
     imp.reload(auto_breakdown)
+    imp.reload(export_pose)
 else:
     from . import auto_twist
     from . import auto_breakdown
+    from . import export_pose
 
 import bpy
 
@@ -68,6 +90,13 @@ def register():
     bpy.utils.register_module(__name__)
     # Register Translation dictionary
     bpy.app.translations.register(__name__, translation_dict)
+    bpy.types.Scene.export_pose_props = bpy.props.PointerProperty(type=export_pose.MySettings)
+
+#    # 項目をメニューの先頭に追加
+#    bpy.types.VIEW3D_MT_pose.append(export_pose.menu_fn_1)
+#    # 項目をメニューの末尾に追加
+#    bpy.types.VIEW3D_MT_pose.prepend(export_pose.menu_fn_2)
+
     print(
         bpy.app.translations.pgettext(
             "Auto Breakdown: Enabled add-on 'Auto Breakdown'"
@@ -75,9 +104,13 @@ def register():
     )
 
 def unregister():
+#    bpy.types.VIEW3D_MT_pose.remove(export_pose.menu_fn_2)
+#    bpy.types.VIEW3D_MT_pose.remove(export_pose.menu_fn_1)
+
     # UnRegister Translation dictionary
     bpy.app.translations.unregister(__name__)
     bpy.utils.unregister_module(__name__)
+    del bpy.types.Scene.export_pose_props
     print(
         bpy.app.translations.pgettext(
             "Auto Breakdown: Disabled add-on 'Auto Breakdown'"
