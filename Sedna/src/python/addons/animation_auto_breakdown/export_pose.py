@@ -75,7 +75,7 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
         layout.label(text = bpy.app.translations.pgettext("Character Name:"))
         layout.label(text = bpy.context.active_object.name.replace(\
             "Armature.", ""))
-
+        layout.label(text = bpy.path.abspath("//"))
         # display the properties
         layout.prop(props, "emotion", \
             text=bpy.app.translations.pgettext("Emotion"))

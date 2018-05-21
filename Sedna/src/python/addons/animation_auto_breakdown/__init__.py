@@ -91,6 +91,7 @@ def register():
     # Register Translation dictionary
     bpy.app.translations.register(__name__, translation_dict)
     bpy.types.Scene.export_pose_props = bpy.props.PointerProperty(type=export_pose.MySettings)
+    #print(bpy.path.abspath("//"))
 
 #    # 項目をメニューの先頭に追加
 #    bpy.types.VIEW3D_MT_pose.append(export_pose.menu_fn_1)
