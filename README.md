@@ -1,6 +1,6 @@
 # Sedna 1.0 セドナ 1.0
-## beta-version Classic-Animation-Like-3DCG development envilonment
-## β版 セルアニメ風動画 開発環境  
+## beta-version Cartoon-Like-3DCG development envilonment
+## β版 カートゥーン風動画 開発環境  
 
 ## 必要環境
 * Blender Version 2.79 が動作する環境
