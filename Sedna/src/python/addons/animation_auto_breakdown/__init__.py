@@ -29,7 +29,21 @@ translation_dict = {
         ("*", "Emotion"):
             "Emotion",
         ("*", "Character Name:"):
-            "Character Name:"
+            "Character Name:",
+        ("*", "Sync Bone Constraints"):
+            "Sync Bone Constraints",
+        ("*", "Sync"):
+            "Sync",
+        ("*", "Write CSV"):
+            "Write CSV",
+        ("*", "Read CSV"):
+            "Read CSV",
+        ("*", "Select CSV File"):
+            "Select CSV File",
+        ("*", "Armature Menu"):
+            "Armature Menu",
+        ("*", "Select Objects which has Armature."):
+            "Select Objects which has Armature.",
     },
     "ja_JP": {
         ("*", "Auto Breakdown: Enabled add-on 'Auto Breakdown'"):
@@ -45,7 +59,21 @@ translation_dict = {
         ("*", "Emotion"):
             "感情",
         ("*", "Character Name:"):
-            "キャラクター名："
+            "キャラクター名：",
+        ("*", "Sync Bone Constraints"):
+            "ボーン 拘束の同期",
+        ("*", "Sync"):
+            "同期",
+        ("*", "Write CSV"):
+            "CSV出力",
+        ("*", "Read CSV"):
+            "CSV入力",
+        ("*", "Select CSV File"):
+            "CSVファイルの選択",
+        ("*", "Armature Menu"):
+            "Armature メニュー",
+        ("*", "Select Objects which has Armature."):
+            "Armatureを選択するメニュー",
     }
 }
 
@@ -53,11 +81,11 @@ if "bpy" in locals():
     import imp
     imp.reload(auto_twist)
     imp.reload(auto_breakdown)
-    imp.reload(export_pose)
+    imp.reload(sync_bone_constraints)
 else:
     from . import auto_twist
     from . import auto_breakdown
-    from . import export_pose
+    from . import sync_bone_constraints
 
 import bpy
 
@@ -90,7 +118,10 @@ def register():
     bpy.utils.register_module(__name__)
     # Register Translation dictionary
     bpy.app.translations.register(__name__, translation_dict)
-    bpy.types.Scene.export_pose_props = bpy.props.PointerProperty(type=export_pose.MySettings)
+    bpy.types.Scene.sync_bone_constraints_props = bpy.props.PointerProperty(\
+        type=sync_bone_constraints.MySettings)
+    bpy.types.WindowManager.test_prop_search = bpy.props.PointerProperty(\
+        type = sync_bone_constraints.TestPropSearchProps)
     #print(bpy.path.abspath("//"))
 
 #    # 項目をメニューの先頭に追加
@@ -111,7 +142,8 @@ def unregister():
     # UnRegister Translation dictionary
     bpy.app.translations.unregister(__name__)
     bpy.utils.unregister_module(__name__)
-    del bpy.types.Scene.export_pose_props
+    del bpy.types.Scene.sync_bone_constraints_props
+    del bpy.types.WindowManager.test_prop_search
     print(
         bpy.app.translations.pgettext(
             "Auto Breakdown: Disabled add-on 'Auto Breakdown'"
