@@ -2,6 +2,11 @@
 
 from . import common
 
+class StringValGroup(bpy.types.PropertyGroup):
+    string_val = bpy.props.StringProperty()
+
+
+bpy.utils.register_class(StringValGroup)
 
 class MySettings(bpy.types.PropertyGroup):
 
@@ -27,8 +32,31 @@ class MySettings(bpy.types.PropertyGroup):
         description = "Object name of the targeted of the constraints sync."
     )
 
-class StringValGroup(bpy.types.PropertyGroup):
-    string_val = bpy.props.StringProperty()
+    # リストで選択されているオブジェクトの名前
+    sel_obj = bpy.props.StringProperty()
+
+
+    # 選択されている値が格納されるプロパティ
+    sel_string = bpy.props.StringProperty()
+    sel_string_val = bpy.props.StringProperty()
+
+    # Drop Downリストに表示される値のリスト
+    string_val_list = bpy.props.CollectionProperty(type=bpy.types.StringValGroup)
+
+    def init_val_list(self):
+        self.string_val_list.clear()
+        for i in range(100):
+            v = self.string_val_list.add()
+            v.string_val = "val" + str( i )
+            v.name = "name" + str(i)
+
+    def update_val(self, nm):
+        for sv in self.string_val_list:
+            if sv.name == nm:
+                self.sel_string_val = sv.string_val
+
+
+
 
 
 class SelectCSVFile(bpy.types.Operator):
@@ -87,30 +115,6 @@ class NullOperationMenu(bpy.types.Menu):
         for i in range(3):
             layout.operator(NullOperation.bl_idname, text=("項目 %d" % (i)))
 
-class TestPropSearchProps(bpy.types.PropertyGroup):
-
-    # リストで選択されているオブジェクトの名前
-    sel_obj = bpy.props.StringProperty()
-
-    # Drop Downリストに表示される値のリスト
-    string_val_list = bpy.props.CollectionProperty(type=StringValGroup)
-
-    # 選択されている値が格納されるプロパティ
-    sel_string = bpy.props.StringProperty()
-    sel_string_val = bpy.props.StringProperty()
-
-    def init_val_list(self):
-        self.string_val_list.clear()
-        for i in range(100):
-            v = self.string_val_list.add()
-            v.string_val = "val" + str( i )
-            v.name = "name" + str(i)
-
-    def update_val(self, nm):
-        for sv in self.string_val_list:
-            if sv.name == nm:
-                self.sel_string_val = sv.string_val
-
 
 class ArmatureMenu(bpy.types.Menu):
 
@@ -154,9 +158,8 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        props = scene.sync_bone_constraints_props
+        props = context.window_manager.sync_bone_constraints_props
 
-        tps = context.window_manager.test_prop_search
 
         # ファイルブラウザを表示する
         layout.label(text = props.csv_file_directory)
@@ -176,23 +179,24 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
 #        layout.prop(props, "overwrite_data", \
 #            text=bpy.app.translations.pgettext("Overwrite Data"))
 
-#        layout.prop_search(tps, "sel_obj", context.scene, "objects", text="Objects")
-        layout.prop_search(tps, "sel_obj", context.scene, \
+        layout.prop_search(props, "sel_obj", context.scene, \
             "objects", text="Objects")
         row = layout.row()
-        row.prop_search(tps, "sel_obj", context.scene, "objects", text="Objects")
+        row.prop_search(props, "sel_obj", context.scene, "objects", text="Objects")
         row = layout.row()
-        row.prop(tps, "sel_obj")
+        row.prop(props, "sel_obj")
 
-        tps.init_val_list()
         row = layout.row()
-        row.prop_search(tps, "sel_string", tps, "string_val_list", text="Test")
+
+        props.init_val_list()
+
+        row.prop_search(props, "sel_string", props, "string_val_list", text="Test")
+
         row = layout.row()
-        row.prop(tps, "sel_string")
+        row.prop(props, "sel_string")
 
-        tps.update_val(tps.sel_string)
-        row.prop(tps, "sel_string_val")
-
+        props.update_val(props.sel_string)
+        row.prop(props, "sel_string_val")
 
         layout.separator()
 
