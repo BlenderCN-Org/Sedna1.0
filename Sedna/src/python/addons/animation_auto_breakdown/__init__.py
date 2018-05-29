@@ -79,13 +79,16 @@ translation_dict = {
 
 if "bpy" in locals():
     import imp
+    imp.reload(utils_io_csv)
     imp.reload(auto_twist)
     imp.reload(auto_breakdown)
     imp.reload(sync_bone_constraints)
 else:
+    from . import utils_io_csv
     from . import auto_twist
     from . import auto_breakdown
     from . import sync_bone_constraints
+
 
 import bpy
 
