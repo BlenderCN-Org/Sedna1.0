@@ -58,10 +58,6 @@ class MySettings(bpy.types.PropertyGroup):
         description = "CSV file name."
     )
     csv_file_directory = bpy.props.StringProperty(subtype="FILE_PATH")
-    target_armature_name = bpy.props.StringProperty(
-        name = "target_armature_name",
-        description = "Object name of the targeted of the constraints sync."
-    )
 
     # リストで選択されているオブジェクトの名前
     #sel_armaturej= bpy.props.StringProperty()
@@ -141,6 +137,37 @@ class NullOperation(bpy.types.Operator):
 #        # メニュー項目の追加
 #        for i in range(3):
 #            layout.operator(NullOperation.bl_idname, text=("項目 %d" % (i)))
+
+class SyncBonesIK(bpy.types.Operator):
+
+    bl_idname = "object.sync_bones_ik"
+    bl_label = "SyncBonesIK"
+    bl_description = "Sync bones Invese Kinematics Settings."
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        props = context.window_manager.sync_bone_constraints_props
+
+        fromArmature = bpy.context.object.name
+        for x in bpy.data.objects[props.sel_armature].pose.bones:
+            if x.name in bpy.data.objects[fromArmature].pose.bones:
+                fromBone = bpy.data.objects[fromArmature].pose.bones[x.name]
+                x.ik_min_x = fromBone.ik_min_x
+                x.ik_min_y = fromBone.ik_min_y
+                x.ik_min_z = fromBone.ik_min_z
+                x.ik_max_x = fromBone.ik_max_x
+                x.ik_max_y = fromBone.ik_max_y
+                x.ik_max_z = fromBone.ik_max_z
+                x.use_ik_limit_x = fromBone.use_ik_limit_x
+                x.use_ik_limit_y = fromBone.use_ik_limit_y
+                x.use_ik_limit_z = fromBone.use_ik_limit_z
+                x.ik_stretch = fromBone.ik_stretch
+                x.lock_ik_x = fromBone.lock_ik_x
+                x.lock_ik_y = fromBone.lock_ik_y
+                x.lock_ik_z = fromBone.lock_ik_z
+
+        return {'FINISHED'}
+
 
 
 class SyncBoneConstraints(bpy.types.Operator):
@@ -466,3 +493,9 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
 
         layout.operator(ImportBoneConstraints.bl_idname, \
             text = bpy.app.translations.pgettext("Read CSV"))
+
+        layout.separator()
+
+        layout.operator(SyncBonesIK.bl_idname, \
+            text = bpy.app.translations.pgettext("Sync IK"))
+

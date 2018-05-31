@@ -44,6 +44,8 @@ translation_dict = {
             "Armature Menu",
         ("*", "Select Objects which has Armature."):
             "Select Objects which has Armature.",
+        ("*", "Sync IK"):
+            "Sync IK",
     },
     "ja_JP": {
         ("*", "Auto Breakdown: Enabled add-on 'Auto Breakdown'"):
@@ -74,6 +76,8 @@ translation_dict = {
             "Armature メニュー",
         ("*", "Select Objects which has Armature."):
             "Armatureを選択するメニュー",
+        ("*", "Sync IK"):
+            "IKの同期",
     }
 }
 
