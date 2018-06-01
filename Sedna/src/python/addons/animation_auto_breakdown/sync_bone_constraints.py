@@ -71,6 +71,9 @@ class MySettings(bpy.types.PropertyGroup):
     )
     csv_file_directory = bpy.props.StringProperty(subtype="FILE_PATH")
 
+    msg_chk = bpy.props.StringProperty()
+    msg_icon = bpy.props.StringProperty()
+
     # リストで選択されているオブジェクトの名前
     #sel_armaturej= bpy.props.StringProperty()
 
@@ -88,6 +91,19 @@ class MySettings(bpy.types.PropertyGroup):
                 v = self.string_val_list.add()
                 v.string_val = obj.name
                 v.name = obj.name
+
+    def check(self):
+        if self.csv_file_name == "":
+            self.msg_chk = bpy.app.translations.pgettext("Select CSV file.")
+            self.msg_icon = "ERROR"
+        elif self.sel_armature == "":
+            self.msg_chk = bpy.app.translations.\
+                pgettext("Select target Armature.")
+            self.msg_icon = "ERROR"
+        else:
+            self.msg_chk = "OK"
+            self.msg_icon = "INFO"
+
 
 #    def update_val(self, nm):
 #        for sv in self.string_val_list:
@@ -551,7 +567,8 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
 
         row.prop_search(props, "sel_armature", props,
                         "string_val_list",
-                        text = bpy.app.translations.pgettext("Target"))
+                        text = bpy.app.translations.pgettext("Target"),
+                        icon="OUTLINER_OB_ARMATURE")
 
 #        row = layout.row()
 #        row.prop(props, "sel_armature")
@@ -560,6 +577,14 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
 #        row.prop(props, "sel_string_val")
 
         layout.separator()
+
+        row = layout.row()
+        box = row.box()
+        box_row = box.row()
+
+        props.check()
+
+        box_row.label(text = props.msg_chk, icon=props.msg_icon)
 
         layout.operator(SyncBoneConstraints.bl_idname, \
             text = bpy.app.translations.pgettext("Sync"))

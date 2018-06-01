@@ -46,6 +46,10 @@ translation_dict = {
             "Select Objects which has Armature.",
         ("*", "Sync IK"):
             "Sync IK",
+        ("*", "Select CSV file."):
+            "Select CSV file.",
+        ("*", "Select target Armature."):
+            "Select target Armature.",
     },
     "ja_JP": {
         ("*", "Auto Breakdown: Enabled add-on 'Auto Breakdown'"):
@@ -78,6 +82,10 @@ translation_dict = {
             "Armatureを選択するメニュー",
         ("*", "Sync IK"):
             "IKの同期",
+        ("*", "Select CSV file."):
+            "CSVファイルを選択してください。",
+        ("*", "Select target Armature."):
+            "対象Armatureを選択してください。",
     }
 }
 
