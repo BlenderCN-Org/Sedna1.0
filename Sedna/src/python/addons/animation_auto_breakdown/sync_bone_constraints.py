@@ -34,9 +34,21 @@ TO_MAX_Z = 21
 TARGET_SPACE = 22
 OWNER_SPACE = 23
 INFLUENCE = 24
-TYPE = 25
+TYPE = 25           # FOR COPY LOCATION
 HEAD_TAIL = 26
 USE_OFFSET = 27
+POLE_TARGET =28   # FOR IK
+POLE_SUBTARGET = 29
+POLE_ANGLE = 30
+ITERATIONS = 31
+CHAIN_COUNT = 32
+USE_TAIL = 33
+USE_STRETCH = 34
+USE_LOCATION = 35
+WEIGHT = 36
+USE_ROTATION = 37
+ORIENT_WEIGHT = 38
+
 
 
 class MySettings(bpy.types.PropertyGroup):
@@ -218,6 +230,17 @@ class ExportBoneConstraints(bpy.types.Operator):
             "type",
             "head_tail",
             "use_offset"
+            "pole_target",
+            "pole_subtarget",
+            "pole_angle"
+            "iterations",
+            "chain_count",
+            "use_tail",
+            "use_stretch",
+            "use_location",
+            "weight",
+            "use_rotation",
+            "orient_weight"
               ]
 
     def execute(self, context):
@@ -307,6 +330,52 @@ class ExportBoneConstraints(bpy.types.Operator):
 
                     bone_data.append(data_row)
 
+                elif y.type == "IK":
+                    print(x.name + ", " + y.name)
+                    data_row = []
+                    data_row.append(x.name)
+                    data_row.append(y.name)
+                    data_row.append(y.mute)
+                    data_row.append(y.target.name)
+                    data_row.append(y.subtarget)
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append(y.influence)
+                    data_row.append(y.type)
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append(y.pole_target)
+                    data_row.append(y.pole_subtarget)
+                    data_row.append(y.pole_angle)
+                    data_row.append(y.iterations)
+                    data_row.append(y.chain_count)
+                    data_row.append(y.use_tail)
+                    data_row.append(y.use_stretch)
+                    data_row.append(y.use_location)
+                    data_row.append(y.weight)
+                    data_row.append(y.use_rotation)
+                    data_row.append(y.orient_weight)
+
+                    bone_data.append(data_row)
+
+
         props = context.window_manager.sync_bone_constraints_props
         utils_io_csv.write(props.csv_file_directory,
                            props.csv_file_name,
@@ -320,10 +389,9 @@ class ImportBoneConstraints(bpy.types.Operator):
     bl_description = "Import bones constraints from CSV file."
     bl_options = {'REGISTER', 'UNDO'}
 
-
-
-
-    def imp(self, target, context):
+    def execute(self, context):
+        props = context.window_manager.sync_bone_constraints_props
+        target = props.sel_armature
         props = context.window_manager.sync_bone_constraints_props
         header, data = utils_io_csv.read(props.csv_file_directory, \
                            props.csv_file_name)
@@ -343,7 +411,7 @@ class ImportBoneConstraints(bpy.types.Operator):
 
             constraint = bone.constraints[row[CONSTRAINT_NAME]]
 
-            print(bone.name + constraint.name)
+            print("bone:" + bone.name + " constraint:" + constraint.name)
 
             constraint.mute = row[MUTE] == "True"
             constraint.target = bpy.data.objects[target]
@@ -395,15 +463,27 @@ class ImportBoneConstraints(bpy.types.Operator):
                 constraint.head_tail = float(row[HEAD_TAIL])
                 constraint.use_offset = row[USE_OFFSET] == "True"
 
-            constraint.target_space = row[TARGET_SPACE]
-            constraint.owner_space = row[OWNER_SPACE]
+            if row[TYPE] == "TRANSFORM" or row[TYPE] == "TRANSFORM":
+                constraint.target_space = row[TARGET_SPACE]
+                constraint.owner_space = row[OWNER_SPACE]
+
             constraint.influence = float(row[INFLUENCE])
 
+            if row[TYPE] == "IK":
+                if row[POLE_TARGET] != "":
+                    constraint.pole_target = bpy.data.objects[target]
+                    if row[POLE_SUBTARGET] != "":
+                        constraint.pole_subtarget = row[POLE_SUBTARGET]
+                constraint.pole_angle = float(row[POLE_ANGLE])
+                constraint.iterations = int(row[ITERATIONS])
+                constraint.chain_count = int(row[CHAIN_COUNT])
+                constraint.use_tail = row[USE_TAIL] == "True"
+                constraint.use_stretch = row[USE_STRETCH] == "True"
+                constraint.use_location = row[USE_LOCATION] == "True"
+                constraint.weight = float(row[WEIGHT])
+                constraint.use_rotation = row[USE_ROTATION] == "True"
+                constraint.orient_weight = float(row[ORIENT_WEIGHT])
 
-
-    def execute(self, context):
-        props = context.window_manager.sync_bone_constraints_props
-        self.imp(self, props.sel_armature, context)
         return {'FINISHED'}
 
 
@@ -498,4 +578,3 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
 
         layout.operator(SyncBonesIK.bl_idname, \
             text = bpy.app.translations.pgettext("Sync IK"))
-
