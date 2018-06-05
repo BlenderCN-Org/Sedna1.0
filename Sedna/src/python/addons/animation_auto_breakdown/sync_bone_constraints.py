@@ -264,6 +264,36 @@ class ExportBoneConstraints(bpy.types.Operator):
         bone_data.append(self.header)
 
         for x in bpy.context.selected_pose_bones:
+            if len(x.constraints) == 0:
+                    data_row = []
+                    data_row.append(x.name)
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+                    data_row.append("")
+
+
             for y in x.constraints:
                 if y.type == "TRANSFORM":
                     print(x.name + ", " + y.name)
@@ -419,6 +449,11 @@ class ImportBoneConstraints(bpy.types.Operator):
             if bpy.data.objects[target].pose.bones.find(row[BONE_NAME]) == -1:
                 print("Bone not found. Bone name is " + row[BONE_NAME])
                 break
+            bone = bpy.data.objects[target].pose.bones[row[BONE_NAME]]
+            for x in bone.constraints:
+                bone.constraints.remove(x)
+
+        for row in data:
             bone = bpy.data.objects[target].pose.bones[row[BONE_NAME]]
 
             if bone.constraints.find(row[CONSTRAINT_NAME]) == -1:
