@@ -208,6 +208,7 @@ class SyncBoneConstraints(bpy.types.Operator):
     def execute(self, context):
         ExportBoneConstraints.execute(ExportBoneConstraints, context)
         ImportBoneConstraints.execute(ImportBoneConstraints, context)
+        SyncBonesIK.execute(SyncBonesIK, context)
         return {'FINISHED'}
 
 class ExportBoneConstraints(bpy.types.Operator):
@@ -624,17 +625,17 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
         layout.operator(SyncBoneConstraints.bl_idname, \
             text = bpy.app.translations.pgettext("Sync"))
 
-        layout.separator()
+#        layout.separator()
 
-        layout.operator(ExportBoneConstraints.bl_idname, \
-            text = bpy.app.translations.pgettext("Write CSV"))
+#        layout.operator(ExportBoneConstraints.bl_idname, \
+#            text = bpy.app.translations.pgettext("Write CSV"))
 
-        layout.separator()
+#        layout.separator()
 
-        layout.operator(ImportBoneConstraints.bl_idname, \
-            text = bpy.app.translations.pgettext("Read CSV"))
+#        layout.operator(ImportBoneConstraints.bl_idname, \
+#            text = bpy.app.translations.pgettext("Read CSV"))
 
-        layout.separator()
+#        layout.separator()
 
-        layout.operator(SyncBonesIK.bl_idname, \
-            text = bpy.app.translations.pgettext("Sync IK"))
+#        layout.operator(SyncBonesIK.bl_idname, \
+#            text = bpy.app.translations.pgettext("Sync IK"))
