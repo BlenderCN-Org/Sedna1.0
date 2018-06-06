@@ -1,55 +1,25 @@
-﻿import bpy
+#!BPY
+# -*- coding: UTF-8 -*-
+# sync_bone_constraints
+#
+# Sync Armature's bone's constraints
+# And Sync bone's Inverse Kinematics Settings
+# 2018.06.06 N(Natukikazemizo)
 
-from . import common
-from . import utils_io_csv
+if "bpy" in locals():
+    import imp
+    imp.reload(utils_io_csv)
+    imp.reload(bone_constraints)
+else:
+    from . import utils_io_csv
+    from . import bone_constraints
+
+import bpy
 
 class StringValGroup(bpy.types.PropertyGroup):
     string_val = bpy.props.StringProperty()
 
 bpy.utils.register_class(StringValGroup)
-
-# def INDEXS
-BONE_NAME = 0
-CONSTRAINT_NAME = 1
-MUTE = 2
-TARGET = 3
-SUBTARGET_BONE_NAME = 4
-EXTRAPOLATE = 5
-FROM_MIN_X = 6
-FROM_MAX_X = 7
-FROM_MIN_Y = 8
-FROM_MAX_Y = 9
-FROM_MIN_Z = 10
-FROM_MAX_Z = 11
-MAP_TO_X_FROM = 12
-MAP_TO_Y_FROM = 13
-MAP_TO_Z_FROM = 14
-MAP_TO = 15
-TO_MIN_X = 16
-TO_MAX_X = 17
-TO_MIN_Y = 18
-TO_MAX_Y = 19
-TO_MIN_Z = 20
-TO_MAX_Z = 21
-TARGET_SPACE = 22
-OWNER_SPACE = 23
-INFLUENCE = 24
-TYPE = 25           # FOR COPY LOCATION
-HEAD_TAIL = 26
-USE_OFFSET = 27
-POLE_TARGET =28   # FOR IK
-POLE_SUBTARGET = 29
-POLE_ANGLE = 30
-ITERATIONS = 31
-CHAIN_COUNT = 32
-USE_TAIL = 33
-USE_STRETCH = 34
-USE_LOCATION = 35
-WEIGHT = 36
-USE_ROTATION = 37
-ORIENT_WEIGHT = 38
-
-
 
 class MySettings(bpy.types.PropertyGroup):
 
@@ -218,209 +188,116 @@ class ExportBoneConstraints(bpy.types.Operator):
     bl_description = "Export bones constraints to CSV File."
     bl_options = {'REGISTER', 'UNDO'}
 
-    header = [
-            "bone_name",
-            "constraint_name",
-            "mute",
-            "target",
-            "subtarget_bone_name",
-            "extrapolate",
-            "from_min_x",
-            "from_max_x",
-            "from_min_y",
-            "from_max_y",
-            "from_min_z",
-            "from_max_z",
-            "map_to_x_from",
-            "map_to_y_from",
-            "map_to_z_from",
-            "map_to",
-            "to_min_x",
-            "to_max_x",
-            "to_min_y",
-            "to_max_y",
-            "to_min_z",
-            "to_max_z",
-            "target_space",
-            "owner_space",
-            "influence",
-            "type",
-            "head_tail",
-            "use_offset"
-            "pole_target",
-            "pole_subtarget",
-            "pole_angle"
-            "iterations",
-            "chain_count",
-            "use_tail",
-            "use_stretch",
-            "use_location",
-            "weight",
-            "use_rotation",
-            "orient_weight"
-              ]
-
     def execute(self, context):
         bone_data = []
-        bone_data.append(self.header)
+        bone_data.append(bone_constraints.BoneConstraints.header)
 
         for x in bpy.context.selected_pose_bones:
+            data = bone_constraints.BoneConstraints()
             if len(x.constraints) == 0:
-                    data_row = []
-                    data_row.append(x.name)
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-
+                data.bone_name = x.name
+                bone_data.append(data.row)
 
             for y in x.constraints:
                 if y.type == "TRANSFORM":
                     print(x.name + ", " + y.name)
-                    data_row = []
-                    data_row.append(x.name)
-                    data_row.append(y.name)
-                    data_row.append(y.mute)
-                    data_row.append(y.target.name)
-                    data_row.append(y.subtarget)
-                    data_row.append(y.use_motion_extrapolate)
-                    data_row.append(y.from_min_x)
-                    data_row.append(y.from_max_x)
-                    data_row.append(y.from_min_y)
-                    data_row.append(y.from_max_y)
-                    data_row.append(y.from_min_z)
-                    data_row.append(y.from_max_z)
-                    data_row.append(y.map_to_x_from)
-                    data_row.append(y.map_to_y_from)
-                    data_row.append(y.map_to_z_from)
-                    data_row.append(y.map_to)
+
+                    data.bone_name = x.name
+                    data.constraint_name = y.name
+                    data.mute = y.mute
+                    data.target = y.target.name
+                    data.subtarget_bone_name = y.subtarget
+                    data.extrapolate = y.use_motion_extrapolate
+                    data.from_min_x = y.from_min_x
+                    data.from_max_x = y.from_max_x
+                    data.from_min_y = y.from_min_y
+                    data.from_max_y = y.from_max_y
+                    data.from_min_z = y.from_min_z
+                    data.from_max_z = y.from_max_z
+                    data.map_to_x_from = y.map_to_x_from
+                    data.map_to_y_from = y.map_to_y_from
+                    data.map_to_z_from = y.map_to_z_from
+                    data.map_to = y.map_to
+
                     if y.map_to == "LOCATION":
-                        data_row.append(y.to_min_x)
-                        data_row.append(y.to_max_x)
-                        data_row.append(y.to_min_y)
-                        data_row.append(y.to_max_y)
-                        data_row.append(y.to_min_z)
-                        data_row.append(y.to_max_z)
+                        data.to_min_x = y.to_min_x
+                        data.to_max_x = y.to_max_x
+                        data.to_min_y = y.to_min_y
+                        data.to_max_y = y.to_max_y
+                        data.to_min_z = y.to_min_z
+                        data.to_max_z = y.to_max_z
                     elif y.map_to == "ROTATION":
-                        data_row.append(y.to_min_x_rot)
-                        data_row.append(y.to_max_x_rot)
-                        data_row.append(y.to_min_y_rot)
-                        data_row.append(y.to_max_y_rot)
-                        data_row.append(y.to_min_z_rot)
-                        data_row.append(y.to_max_z_rot)
+                        data.to_min_x = y.to_min_x_rot
+                        data.to_max_x = y.to_max_x_rot
+                        data.to_min_y = y.to_min_y_rot
+                        data.to_max_y = y.to_max_y_rot
+                        data.to_min_z = y.to_min_z_rot
+                        data.to_max_z = y.to_max_z_rot
                     else:
                         # map_to:SCALE
-                        data_row.append(y.to_min_x_scale)
-                        data_row.append(y.to_max_x_scale)
-                        data_row.append(y.to_min_y_scale)
-                        data_row.append(y.to_max_y_scale)
-                        data_row.append(y.to_min_z_scale)
-                        data_row.append(y.to_max_z_scale)
-                    data_row.append(y.target_space)
-                    data_row.append(y.owner_space)
-                    data_row.append(y.influence)
-                    data_row.append(y.type)
+                        data.to_min_x = y.to_min_x_scale
+                        data.to_max_x = y.to_max_x_scale
+                        data.to_min_y = y.to_min_y_scale
+                        data.to_max_y = y.to_max_y_scale
+                        data.to_min_z = y.to_min_z_scale
+                        data.to_max_z = y.to_max_z_scale
 
-                    bone_data.append(data_row)
+                    data.target_space = y.target_space
+                    data.owner_space = y.owner_space
+                    data.influence = y.influence
+                    data.type = y.type
+
+                    bone_data.append(data.row)
                 elif y.type == "COPY_LOCATION":
                     print(x.name + ", " + y.name)
-                    data_row = []
-                    data_row.append(x.name)
-                    data_row.append(y.name)
-                    data_row.append(y.mute)
-                    data_row.append(y.target.name)
-                    data_row.append(y.subtarget)
-                    data_row.append("")
-                    data_row.append(y.use_x)
-                    data_row.append(y.invert_x)
-                    data_row.append(y.use_y)
-                    data_row.append(y.invert_y)
-                    data_row.append(y.use_z)
-                    data_row.append(y.invert_z)
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append(y.target_space)
-                    data_row.append(y.owner_space)
-                    data_row.append(y.influence)
-                    data_row.append(y.type)
-                    data_row.append(y.head_tail)
-                    data_row.append(y.use_offset)
 
-                    bone_data.append(data_row)
+                    data.bone_name = x.name
+                    data.constraint_name = y.name
+                    data.mute = y.mute
+                    data.target = y.target.name
+                    data.subtarget_bone_name = y.subtarget
+
+                    data.from_min_x = y.use_x
+                    data.from_max_x = y.invert_x
+                    data.from_min_y = y.use_y
+                    data.from_max_y = y.invert_y
+                    data.from_min_z = y.use_z
+                    data.from_max_z = y.invert_z
+
+                    data.target_space = y.target_space
+                    data.owner_space = y.owner_space
+                    data.influence = y.influence
+                    data.type = y.type
+                    data.head_tail = y.head_tail
+                    data.use_offset = y.use_offset
+
+                    bone_data.append(data.row)
 
                 elif y.type == "IK":
                     print(x.name + ", " + y.name)
-                    data_row = []
-                    data_row.append(x.name)
-                    data_row.append(y.name)
-                    data_row.append(y.mute)
-                    data_row.append(y.target.name)
-                    data_row.append(y.subtarget)
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append(y.influence)
-                    data_row.append(y.type)
-                    data_row.append("")
-                    data_row.append("")
-                    data_row.append(y.pole_target)
-                    data_row.append(y.pole_subtarget)
-                    data_row.append(y.pole_angle)
-                    data_row.append(y.iterations)
-                    data_row.append(y.chain_count)
-                    data_row.append(y.use_tail)
-                    data_row.append(y.use_stretch)
-                    data_row.append(y.use_location)
-                    data_row.append(y.weight)
-                    data_row.append(y.use_rotation)
-                    data_row.append(y.orient_weight)
 
-                    bone_data.append(data_row)
+                    data.bone_name = x.name
+                    data.constraint_name = y.name
+                    data.mute = y.mute
+                    data.target = y.target.name
+                    data.subtarget_bone_name = y.subtarget
+
+                    data.influence = y.influence
+                    data.type = y.type
+
+                    data.pole_target = y.pole_target
+                    data.pole_subtarget = y.pole_subtarget
+                    data.pole_angle = y.pole_angle
+                    data.iterations = y.iterations
+                    data.chain_count = y.chain_count
+                    data.use_tail = y.use_tail
+                    data.use_stretch = y.use_stretch
+                    data.use_location = y.use_location
+                    data.weight = y.weight
+                    data.use_rotation = y.use_rotation
+                    data.orient_weight = y.orient_weight
+
+                    bone_data.append(data.row)
 
 
         props = context.window_manager.sync_bone_constraints_props
@@ -447,94 +324,100 @@ class ImportBoneConstraints(bpy.types.Operator):
             if bpy.data.objects.find(target) == -1:
                 print("Object not found. Object name is " + target)
                 break
-            if bpy.data.objects[target].pose.bones.find(row[BONE_NAME]) == -1:
-                print("Bone not found. Bone name is " + row[BONE_NAME])
+
+            con = bone_constraints.BoneConstraints(row)
+
+            if bpy.data.objects[target].pose.bones.find(con.bone_name) == -1:
+                print("Bone not found. Bone name is " + con.bone_name)
                 break
-            bone = bpy.data.objects[target].pose.bones[row[BONE_NAME]]
+            bone = bpy.data.objects[target].pose.bones[con.bone_name]
             for x in bone.constraints:
                 bone.constraints.remove(x)
 
         for row in data:
-            bone = bpy.data.objects[target].pose.bones[row[BONE_NAME]]
+            bone = bpy.data.objects[target].pose.bones[con.bone_name]
 
-            if bone.constraints.find(row[CONSTRAINT_NAME]) == -1:
-                constraint = bone.constraints.new(type=row[TYPE])
-                constraint.name = row[CONSTRAINT_NAME]
+            if con.constraint_name is None or con.constraint_name == "":
+                continue
 
-            constraint = bone.constraints[row[CONSTRAINT_NAME]]
+            if bone.constraints.find(con.constraint_name) == -1:
+                constraint = bone.constraints.new(type=con.type)
+                constraint.name = con.constraint_name
+
+            constraint = bone.constraints[con.constraint_name]
 
             print("bone:" + bone.name + " constraint:" + constraint.name)
 
-            constraint.mute = row[MUTE] == "True"
+            constraint.mute = con.mute == "True"
             constraint.target = bpy.data.objects[target]
-            constraint.subtarget = row[SUBTARGET_BONE_NAME]
+            constraint.subtarget = con.subtarget_bone_name
 
-            if row[TYPE] == "TRANSFORM":
-                constraint.use_motion_extrapolate = row[EXTRAPOLATE] == "True"
+            if con.type == "TRANSFORM":
+                constraint.use_motion_extrapolate = row.extrapolate == "True"
 
-                constraint.from_min_x = float(row[FROM_MIN_X])
-                constraint.from_max_x = float(row[FROM_MAX_X])
-                constraint.from_min_y = float(row[FROM_MIN_Y])
-                constraint.from_max_y = float(row[FROM_MAX_Y])
-                constraint.from_min_z = float(row[FROM_MIN_Z])
-                constraint.from_max_z = float(row[FROM_MAX_Z])
+                constraint.from_min_x = float(con.from_min_x)
+                constraint.from_max_x = float(con.from_max_x)
+                constraint.from_min_y = float(con.from_min_y)
+                constraint.from_max_y = float(con.from_max_y)
+                constraint.from_min_z = float(con.from_min_z)
+                constraint.from_max_z = float(con.from_max_z)
 
-                constraint.map_to_x_from = row[MAP_TO_X_FROM]
-                constraint.map_to_y_from = row[MAP_TO_Y_FROM]
-                constraint.map_to_z_from = row[MAP_TO_Z_FROM]
-                constraint.map_to = row[MAP_TO]
+                constraint.map_to_x_from = con.map_to_x_from
+                constraint.map_to_y_from = con.map_to_y_from
+                constraint.map_to_z_from = con.map_to_z_from
+                constraint.map_to = con.map_to
                 if constraint.map_to == "LOCATION":
-                    constraint.to_min_x = float(row[TO_MIN_X])
-                    constraint.to_max_x = float(row[TO_MAX_X])
-                    constraint.to_min_y = float(row[TO_MIN_Y])
-                    constraint.to_max_y = float(row[TO_MAX_Y])
-                    constraint.to_min_z = float(row[TO_MIN_Z])
-                    constraint.to_max_z = float(row[TO_MAX_Z])
+                    constraint.to_min_x = float(con.to_min_x)
+                    constraint.to_max_x = float(con.to_max_x)
+                    constraint.to_min_y = float(con.to_min_y)
+                    constraint.to_max_y = float(con.to_max_y)
+                    constraint.to_min_z = float(con.to_min_z)
+                    constraint.to_max_z = float(con.to_max_z)
                 elif constraint.map_to == "ROTATION":
-                    constraint.to_min_x_rot = float(row[TO_MIN_X])
-                    constraint.to_max_x_rot = float(row[TO_MAX_X])
-                    constraint.to_min_y_rot = float(row[TO_MIN_Y])
-                    constraint.to_max_y_rot = float(row[TO_MAX_Y])
-                    constraint.to_min_z_rot = float(row[TO_MIN_Z])
-                    constraint.to_max_z_rot = float(row[TO_MAX_Z])
+                    constraint.to_min_x_rot = float(con.to_min_x)
+                    constraint.to_max_x_rot = float(con.to_max_x)
+                    constraint.to_min_y_rot = float(con.to_min_y)
+                    constraint.to_max_y_rot = float(con.to_max_y)
+                    constraint.to_min_z_rot = float(con.to_min_z)
+                    constraint.to_max_z_rot = float(con.to_max_z)
                 else:
                     # map_to:SCALE
-                    constraint.to_min_x_scale = float(row[TO_MIN_X])
-                    constraint.to_max_x_scale = float(row[TO_MAX_X])
-                    constraint.to_min_y_scale = float(row[TO_MIN_Y])
-                    constraint.to_max_y_scale = float(row[TO_MAX_Y])
-                    constraint.to_min_z_scale = float(row[TO_MIN_Z])
-                    constraint.to_max_z_scale = float(row[TO_MAX_Z])
-            elif row[TYPE] == "COPY_LOCATION":
-                constraint.use_x = row[FROM_MIN_X] == "True"
-                constraint.invert_x = row[FROM_MAX_X] == "True"
-                constraint.use_y = row[FROM_MIN_Y] == "True"
-                constraint.invert_y = row[FROM_MAX_Y] == "True"
-                constraint.use_z = row[FROM_MIN_Z] == "True"
-                constraint.invert_z = row[FROM_MAX_Z] == "True"
-                constraint.head_tail = float(row[HEAD_TAIL])
-                constraint.use_offset = row[USE_OFFSET] == "True"
+                    constraint.to_min_x_scale = float(con.to_min_x)
+                    constraint.to_max_x_scale = float(con.to_max_x)
+                    constraint.to_min_y_scale = float(con.to_min_y)
+                    constraint.to_max_y_scale = float(con.to_max_y)
+                    constraint.to_min_z_scale = float(con.to_min_z)
+                    constraint.to_max_z_scale = float(con.to_max_z)
+            elif con.type == "COPY_LOCATION":
+                constraint.use_x = con.from_min_x == "True"
+                constraint.invert_x = con.from_max_x == "True"
+                constraint.use_y = con.from_min_y == "True"
+                constraint.invert_y = con.from_max_y == "True"
+                constraint.use_z = con.from_min_z == "True"
+                constraint.invert_z = con.from_max_z == "True"
+                constraint.head_tail = float(con.head_tail)
+                constraint.use_offset = con.use_offset
 
-            if row[TYPE] == "TRANSFORM" or row[TYPE] == "TRANSFORM":
-                constraint.target_space = row[TARGET_SPACE]
-                constraint.owner_space = row[OWNER_SPACE]
+            if con.type == "TRANSFORM" or con.type == "TRANSFORM":
+                constraint.target_space = con.target_space
+                constraint.owner_space = con.owner_space
 
-            constraint.influence = float(row[INFLUENCE])
+            constraint.influence = con.influence
 
             if row[TYPE] == "IK":
                 if row[POLE_TARGET] != "":
                     constraint.pole_target = bpy.data.objects[target]
-                    if row[POLE_SUBTARGET] != "":
-                        constraint.pole_subtarget = row[POLE_SUBTARGET]
-                constraint.pole_angle = float(row[POLE_ANGLE])
-                constraint.iterations = int(row[ITERATIONS])
-                constraint.chain_count = int(row[CHAIN_COUNT])
-                constraint.use_tail = row[USE_TAIL] == "True"
-                constraint.use_stretch = row[USE_STRETCH] == "True"
-                constraint.use_location = row[USE_LOCATION] == "True"
-                constraint.weight = float(row[WEIGHT])
-                constraint.use_rotation = row[USE_ROTATION] == "True"
-                constraint.orient_weight = float(row[ORIENT_WEIGHT])
+                    if con.pole_subtarget != "":
+                        constraint.pole_subtarget = con.pole_subtarget
+                constraint.pole_angle = con.pole_angle
+                constraint.iterations = con.iterations
+                constraint.chain_count = con.chain_count
+                constraint.use_tail = con.use_tail
+                constraint.use_stretch = con.use_stretch
+                constraint.use_location = con.use_location
+                constraint.weight = con.weight
+                constraint.use_rotation = con.use_rotation
+                constraint.orient_weight = con.orient_weight
 
         return {'FINISHED'}
 
