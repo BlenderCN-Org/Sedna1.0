@@ -404,8 +404,8 @@ class ImportBoneConstraints(bpy.types.Operator):
 
             constraint.influence = con.influence
 
-            if row[TYPE] == "IK":
-                if row[POLE_TARGET] != "":
+            if con.type == "IK":
+                if con.pole_target != "":
                     constraint.pole_target = bpy.data.objects[target]
                     if con.pole_subtarget != "":
                         constraint.pole_subtarget = con.pole_subtarget
