@@ -193,12 +193,13 @@ class ExportBoneConstraints(bpy.types.Operator):
         bone_data.append(bone_constraints.BoneConstraints.header)
 
         for x in bpy.context.selected_pose_bones:
-            data = bone_constraints.BoneConstraints()
             if len(x.constraints) == 0:
+                data = bone_constraints.BoneConstraints()
                 data.bone_name = x.name
                 bone_data.append(data.row)
 
             for y in x.constraints:
+                data = bone_constraints.BoneConstraints()
                 if y.type == "TRANSFORM":
                     print(x.name + ", " + y.name)
 
@@ -273,6 +274,30 @@ class ExportBoneConstraints(bpy.types.Operator):
 
                     bone_data.append(data.row)
 
+                elif y.type == "COPY_ROTATION":
+                    print(x.name + ", " + y.name)
+
+                    data.bone_name = x.name
+                    data.constraint_name = y.name
+                    data.mute = y.mute
+                    data.target = y.target.name
+                    data.subtarget_bone_name = y.subtarget
+
+                    data.from_min_x = y.use_x
+                    data.from_max_x = y.invert_x
+                    data.from_min_y = y.use_y
+                    data.from_max_y = y.invert_y
+                    data.from_min_z = y.use_z
+                    data.from_max_z = y.invert_z
+
+                    data.target_space = y.target_space
+                    data.owner_space = y.owner_space
+                    data.influence = y.influence
+                    data.type = y.type
+                    data.use_offset = y.use_offset
+
+                    bone_data.append(data.row)
+
                 elif y.type == "IK":
                     print(x.name + ", " + y.name)
 
@@ -335,6 +360,9 @@ class ImportBoneConstraints(bpy.types.Operator):
                 bone.constraints.remove(x)
 
         for row in data:
+
+            con = bone_constraints.BoneConstraints(row)
+
             bone = bpy.data.objects[target].pose.bones[con.bone_name]
 
             if con.constraint_name is None or con.constraint_name == "":
@@ -353,7 +381,7 @@ class ImportBoneConstraints(bpy.types.Operator):
             constraint.subtarget = con.subtarget_bone_name
 
             if con.type == "TRANSFORM":
-                constraint.use_motion_extrapolate = row.extrapolate == "True"
+                constraint.use_motion_extrapolate = con.extrapolate == "True"
 
                 constraint.from_min_x = float(con.from_min_x)
                 constraint.from_max_x = float(con.from_max_x)
@@ -397,8 +425,17 @@ class ImportBoneConstraints(bpy.types.Operator):
                 constraint.invert_z = con.from_max_z == "True"
                 constraint.head_tail = float(con.head_tail)
                 constraint.use_offset = con.use_offset
+            elif con.type == "COPY_ROTATION":
+                constraint.use_x = con.from_min_x == "True"
+                constraint.invert_x = con.from_max_x == "True"
+                constraint.use_y = con.from_min_y == "True"
+                constraint.invert_y = con.from_max_y == "True"
+                constraint.use_z = con.from_min_z == "True"
+                constraint.invert_z = con.from_max_z == "True"
+                constraint.use_offset = con.use_offset
 
-            if con.type == "TRANSFORM" or con.type == "TRANSFORM":
+            if con.type == "TRANSFORM" or con.type == "COPY_LOCATION" or \
+                    con.type == "COPY_ROTATION":
                 constraint.target_space = con.target_space
                 constraint.owner_space = con.owner_space
 

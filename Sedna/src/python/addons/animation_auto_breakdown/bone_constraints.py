@@ -107,7 +107,7 @@ class BoneConstraints:
     def from_min_x(self):
         return self.row[self.header.index("from_min_x")]
 
-    @bone_name.setter
+    @from_min_x.setter
     def from_min_x(self, value):
         self.row[self.header.index("from_min_x")] = value
 
