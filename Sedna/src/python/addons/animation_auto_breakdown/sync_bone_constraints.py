@@ -193,6 +193,10 @@ class ExportBoneConstraints(bpy.types.Operator):
         bone_data.append(bone_constraints.BoneConstraints.header)
 
         for x in bpy.context.selected_pose_bones:
+            # SKIP Special Bone
+            if x.name == "Controllers_Root":
+                continue
+
             if len(x.constraints) == 0:
                 data = bone_constraints.BoneConstraints()
                 data.bone_name = x.name
