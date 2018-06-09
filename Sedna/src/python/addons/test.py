@@ -2,6 +2,20 @@
 import sys
 
 
+bl_info = {
+    "name": "Auto Test Test",
+    "author": "N(Natukikazemizo)",
+    "version": (0, 0),
+    "blender": (2, 79, 0),
+    "location": "None",
+    "description": "Test of Auto Test",
+    "warning": "",
+    "support": "TESTING",
+    "wiki_url": "",
+    "tracker_url": "",
+    "category": "Animation"
+}
+
 if __name__ == "__main__":
     try:
         # bl_name = object.test_ops_1 のテスト
