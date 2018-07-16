@@ -167,7 +167,7 @@ class SyncBonesIK(bpy.types.Operator):
         return {'FINISHED'}
 
 
-
+# Sync Bone Constraints
 class SyncBoneConstraints(bpy.types.Operator):
 
     bl_idname = "object.sync_bone_constraints"

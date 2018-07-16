@@ -22,14 +22,16 @@ translation_dict = {
             "Auto Breakdown: Disabled add-on 'Auto Breakdown'",
         ("*", "Auto Breakdown"):
             "Auto Breakdown",
+        ("*", "Auto Twist"):
+            "Auto Twist",
         ("*", "Overwrite Data"):
             "Overwrite Data",
         ("*", "Export Pose"):
             "Export Pose",
         ("*", "Emotion"):
             "Emotion",
-        ("*", "Character Name:"):
-            "Character Name:",
+        ("*", "Character Name"):
+            "Character Name",
         ("*", "Sync Bone Constraints"):
             "Sync Bone Constraints",
         ("*", "Sync"):
@@ -50,6 +52,16 @@ translation_dict = {
             "Select CSV file.",
         ("*", "Select target Armature."):
             "Select target Armature.",
+        ("*", "Select Strip."):
+            "Select Strip.",
+        ("*", "Overwrite Strip"):
+            "Overwrite Strip",
+        ("*", "Source Strip"):
+            "Source Strip",
+        ("*", "Destination Track"):
+            "Destination Track",
+        ("*", "Destination Strip"):
+            "Destination Strip",
     },
     "ja_JP": {
         ("*", "Auto Breakdown: Enabled add-on 'Auto Breakdown'"):
@@ -58,14 +70,16 @@ translation_dict = {
             "自動中割り: アドオン「自動中割り」が無効化されました。",
         ("*", "Auto Breakdown"):
             "自動中割り",
+        ("*", "Auto Twist"):
+            "自動ひねり",
         ("*", "Overwrite Data"):
             "データ上書き",
         ("*", "Export Pose"):
             "ポーズ抽出",
         ("*", "Emotion"):
             "感情",
-        ("*", "Character Name:"):
-            "キャラクター名：",
+        ("*", "Character Name"):
+            "キャラクター名",
         ("*", "Sync Bone Constraints"):
             "ボーン 拘束の同期",
         ("*", "Sync"):
@@ -85,7 +99,17 @@ translation_dict = {
         ("*", "Select CSV file."):
             "CSVファイルを選択してください。",
         ("*", "Select target Armature."):
-            "対象Armatureを選択してください。",
+            "Armatureを選択してください。",
+        ("*", "Select Strip."):
+            "ストリップを選択してください。",
+        ("*", "Overwrite Strip"):
+            "ストリップを上書き",
+        ("*", "Source Strip"):
+            "元ストリップ",
+        ("*", "Destination Track"):
+            "変換後トラック",
+        ("*", "Destination Strip"):
+            "変換後ストリップ",
     }
 }
 
@@ -138,6 +162,8 @@ def register():
 
     bpy.types.WindowManager.sync_bone_constraints_props = bpy.props.PointerProperty(\
         type=sync_bone_constraints.MySettings)
+    bpy.types.WindowManager.auto_twist_props = bpy.props.PointerProperty(\
+        type=auto_twist.MySettings)
 
 #    # 項目をメニューの先頭に追加
 #    bpy.types.VIEW3D_MT_pose.append(export_pose.menu_fn_1)
@@ -155,6 +181,8 @@ def unregister():
     bpy.utils.unregister_class(sync_bone_constraints.StringValGroup)
     bpy.app.translations.unregister(__name__)
     bpy.utils.unregister_module(__name__)
+
+    del bpy.types.WindowManager.auto_twist_props
     del bpy.types.WindowManager.sync_bone_constraints_props
     print(
         bpy.app.translations.pgettext(
