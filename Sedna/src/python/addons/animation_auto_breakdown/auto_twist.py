@@ -16,6 +16,9 @@ import bpy
 # Twisted Objects trailer
 TWISTED_TRAILER = "_Twist"
 
+# Action Target Bone Name
+ACT_TARGET = "Act_Target"
+
 class MySettings(bpy.types.PropertyGroup):
 
     source_strip_name = bpy.props.StringProperty(
