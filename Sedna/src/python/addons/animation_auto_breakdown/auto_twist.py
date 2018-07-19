@@ -11,6 +11,7 @@ else:
     from . import common
 
 import bpy
+import mathutils
 
 # CONSTANTS
 # Twisted Objects trailer
