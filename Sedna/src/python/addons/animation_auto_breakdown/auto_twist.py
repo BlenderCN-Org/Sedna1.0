@@ -109,12 +109,12 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
             return True
         return False
 
-    # ヘッダーのカスタマイズ
+    # Customize header
     def draw_header(self, context):
         layout = self.layout
         layout.label(text="", icon='PLUGIN')
 
-    # メニューの描画処理
+    # Draw Menu
     def draw(self, context):
         layout = self.layout
         scene = context.scene

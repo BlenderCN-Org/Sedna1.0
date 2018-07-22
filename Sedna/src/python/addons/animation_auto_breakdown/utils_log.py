@@ -1,6 +1,6 @@
 #!BPY
 # -*- coding: UTF-8 -*-
-# Log
+# Utilities of Logging
 #
 # 2017.07.17 Natukikazemizo
 import datetime
@@ -31,7 +31,3 @@ class Util_Log():
 
     def err(self, str):
         self.log("ERR :" + str)
-
-
-
-

@@ -1,7 +1,7 @@
 #!BPY
 # -*- coding: UTF-8 -*-
 #
-# read/write CSV file
+# Utilities of read/write CSV file
 #
 #
 # 2017.09.09 Natukikazemizo
@@ -51,6 +51,3 @@ def read(file_path, file_name, enc = 'utf-8'):
     except csv.Error as e:
         print(e)
     return header, data
-
-
-

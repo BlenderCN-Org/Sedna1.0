@@ -1,0 +1,21 @@
+﻿#!BPY
+# -*- coding: UTF-8 -*-
+# Utilities of F-Cureve
+#
+# 2018.07.22 Natukikazemizo
+
+import bpy
+
+def is_valid_layer(src_list, tgt_list):
+	"""Check if there is a valid layer in both layers."""
+	for i, val in enumerate(src_lict):
+		if val and tgt_list[i]:
+			return True
+	return False
+
+def get_bone_name_list(armature_name, layer_list):
+	"""Get Bone name List of selected layers"""
+	ret = []
+	for bone in bpy.data.objects[armature_name].data.bones:
+		if is_valid_layer(bone.layers, layer_list):
+			ret.append(bone.name)
