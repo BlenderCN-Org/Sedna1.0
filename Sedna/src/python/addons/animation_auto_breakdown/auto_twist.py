@@ -7,8 +7,12 @@
 if "bpy" in locals():
     import imp
     imp.reload(common)
+    imp.reload(utils_armature)
+    imp.reload(utils_fcurve)
 else:
     from . import common
+    from . import utils_armature
+    from . import utils_fcurve
 
 import bpy
 import mathutils
@@ -27,6 +31,11 @@ class MySettings(bpy.types.PropertyGroup):
         description = "Source Strip name."
     )
 
+    source_action_name = bpy.props.StringProperty(
+        name = "source_action_name",
+        description = "Source Action name."
+    )
+
     destination_track_name = bpy.props.StringProperty(
         name = "destination_track_name",
         description = "Destination Track name."
@@ -35,6 +44,11 @@ class MySettings(bpy.types.PropertyGroup):
     destination_strip_name = bpy.props.StringProperty(
         name = "destination_strip_name",
         description = "Destination Strip name."
+    )
+
+    destination_action_name = bpy.props.StringProperty(
+        name = "destination_action_name",
+        description = "Destination Action name."
     )
 
     character = bpy.props.EnumProperty(
@@ -69,9 +83,22 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        #ExportBoneConstraints.execute(ExportBoneConstraints, context)
-        #ImportBoneConstraints.execute(ImportBoneConstraints, context)
-        #SyncBonesIK.execute(SyncBonesIK, context)
+        props = context.window_manager.auto_twist_props
+
+        # Crete NLA track
+        if props.destination_track_name not in \
+            bpy.context.object.animation_data.nla_tracks:
+
+            track = bpy.context.object.animation_data.nla_tracks.new()
+            track.name = props.destination_track_name
+
+        # Create Action
+        if props.destination_action_name not in bpy.data.actions:
+            bpy.data.actions.new(props.destination_action_name)
+
+        # Create Strip
+
+        print("BP0010")
         return {'FINISHED'}
 
 # Add "Auto Breakdown" tab on Tool Shelf
@@ -101,11 +128,15 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
             props = context.window_manager.auto_twist_props
             props.source_strip_name = \
                 selected_strips[0].name
+            props.source_action_name = \
+                selected_strips[0].action.name
             props.destination_track_name = \
                 bpy.context.object.animation_data.nla_tracks.active.name + \
                 TWISTED_TRAILER
             props.destination_strip_name = \
                 props.source_strip_name + TWISTED_TRAILER
+            props.destination_action_name = \
+                props.source_action_name + TWISTED_TRAILER
             return True
         return False
 
@@ -122,10 +153,14 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
 
         layout.prop(props, "source_strip_name", \
             text = bpy.app.translations.pgettext("Source Strip"))
+        layout.prop(props, "source_action_name", \
+            text = bpy.app.translations.pgettext("Source Action"))
         layout.prop(props, "destination_track_name", \
             text = bpy.app.translations.pgettext("Destination Track"))
         layout.prop(props, "destination_strip_name", \
             text = bpy.app.translations.pgettext("Destination Strip"))
+        layout.prop(props, "destination_action_name", \
+            text = bpy.app.translations.pgettext("Destination Action"))
 
         row = layout.row()
 
@@ -133,7 +168,7 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
             text=bpy.app.translations.pgettext("Character Name"))
 
         layout.prop(props, "overwrite_data", \
-            text=bpy.app.translations.pgettext("Overwrite Strip"))
+            text=bpy.app.translations.pgettext("Overwrite Strip&Action"))
 
         row = layout.row()
 

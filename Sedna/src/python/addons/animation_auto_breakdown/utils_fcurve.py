@@ -10,9 +10,11 @@ import mathutils
 ###################
 # SUB FUNCTIONS
 ###################
+
 def get_location_bone_name(fcurve):
-    """get bone name from data_path"""
-	data_path = fcurve.data_path
+    '''get bone name from data_path'''
+
+    data_path = fcurve.data_path
     if "].location" in data_path:
         index = data_path.find('"')
         str = data_path[index + 1:]
@@ -34,6 +36,7 @@ def add_keyframe_point(keyframe_points, type, frame, value):
 ###################
 # MAIN FUNCTIONS
 ###################
+
 def get_pose(action_name, frame, bone_name_list):
 	'''Get Pose(Bone Name & Location(Vector)'s Dictionary)'''
 	ret = {}
@@ -46,7 +49,7 @@ def get_pose(action_name, frame, bone_name_list):
 	# Create Vector Dictionary
 	coordinate = []
 	for fcurve in action.fcurves:
-		bone_name = get_location_bone_name(fcurve):
+		bone_name = get_location_bone_name(fcurve)
 		if bone_name in bone_name_list:
 			coordinate.append(fcurve.evaluate(frame))
 			if len(coordinate) == 3:
@@ -69,7 +72,7 @@ def get_pose_dic(action_name, bone_name_list):
 
 	# Create {frame:{bone_name:Vector}} Dictionary
 	for i in range(len(fcurves)):
-		bone_name = get_location_bone_name(fcurves[i]):
+		bone_name = get_location_bone_name(fcurves[i])
 		if bone_name in bone_name_list:
 			for keyframe_point in fcurves[i].keyframe_points:
 				frame = int(keyframe_point.co[0])
@@ -92,14 +95,14 @@ def set_pose(action_name, frame, pose):
 	# remove old keyframe_points
 	for fcurve in fcurves:
 		for keyframe_point in fcurve.keyframe_points:
-			if int(keyframe_point.co[0]) = frame:
+			if int(keyframe_point.co[0]) == frame:
 				fcurve.keyframe_points.remove(keyframe_point)
 				break
 		fcurve.update
 
 	# Register pose
 	for i in range(len(fcurves)):
-		bone_name = get_location_bone_name(fcurves[i]):
+		bone_name = get_location_bone_name(fcurves[i])
 		if bone_name in bone_name_list:
 			add_keyframe_point(fcurves[i].keyframe_points, \
 				"KEYFRAME", frame, pose[bone_name][0])

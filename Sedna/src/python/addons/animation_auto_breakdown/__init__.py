@@ -54,14 +54,18 @@ translation_dict = {
             "Select target Armature.",
         ("*", "Select Strip."):
             "Select Strip.",
-        ("*", "Overwrite Strip"):
-            "Overwrite Strip",
+        ("*", "Overwrite Strip&Action"):
+            "Overwrite Strip&Action",
         ("*", "Source Strip"):
             "Source Strip",
+        ("*", "Source Action"):
+            "Source Action",
         ("*", "Destination Track"):
             "Destination Track",
         ("*", "Destination Strip"):
             "Destination Strip",
+        ("*", "Destination Action"):
+            "Destination Action",
     },
     "ja_JP": {
         ("*", "Auto Breakdown: Enabled add-on 'Auto Breakdown'"):
@@ -102,14 +106,18 @@ translation_dict = {
             "Armatureを選択してください。",
         ("*", "Select Strip."):
             "ストリップを選択してください。",
-        ("*", "Overwrite Strip"):
-            "ストリップを上書き",
+        ("*", "Overwrite Strip&Action"):
+            "ストリップとアクションを上書き",
         ("*", "Source Strip"):
             "元ストリップ",
+        ("*", "Source Action"):
+            "Source Action",
         ("*", "Destination Track"):
             "変換後トラック",
         ("*", "Destination Strip"):
             "変換後ストリップ",
+        ("*", "Destination Action"):
+            "変換後アクション",
     }
 }
 
