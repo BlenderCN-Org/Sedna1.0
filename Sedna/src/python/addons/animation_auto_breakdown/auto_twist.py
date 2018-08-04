@@ -26,6 +26,11 @@ ACT_TARGET = "Act_Target"
 
 class MySettings(bpy.types.PropertyGroup):
 
+    source_track_name = bpy.props.StringProperty(
+        name = "source_track_name",
+        description = "Source Track name."
+    )
+
     source_strip_name = bpy.props.StringProperty(
         name = "source_strip_name",
         description = "Source Strip name."
@@ -85,18 +90,44 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
     def execute(self, context):
         props = context.window_manager.auto_twist_props
 
-        # Crete NLA track
-        if props.destination_track_name not in \
-            bpy.context.object.animation_data.nla_tracks:
+        # GetSourceTruck
+        src_track = bpy.context.object.animation_data.nla_tracks[\
+            props.source_track_name]
 
+        # GetSourceStrip
+        src_strip = src_track.strips[props.source_strip_name]
+
+        frame_start = src_strip.frame_start
+
+        # Crete NLA track
+        if props.destination_track_name in \
+            bpy.context.object.animation_data.nla_tracks:
+            track = bpy.context.object.animation_data.nla_tracks[\
+                props.destination_track_name]
+        else:
             track = bpy.context.object.animation_data.nla_tracks.new()
             track.name = props.destination_track_name
 
         # Create Action
-        if props.destination_action_name not in bpy.data.actions:
-            bpy.data.actions.new(props.destination_action_name)
+        if props.destination_action_name in bpy.data.actions:
+            act = bpy.data.actions[props.destination_action_name]
+        else:
+            act = bpy.data.actions.new(props.destination_action_name)
 
         # Create Strip
+        if props.destination_strip_name in track.strips:
+            strip = track.strips[props.destination_strip_name]
+        else:
+            # Seek Same frame Strp
+            find = False
+            for x in track.strips:
+                if x.frame_start == frame_start:
+                    find = True
+                    strip = x
+                    break
+            if not find:
+                strip = track.strips.new(name = props.destination_strip_name,\
+                    start = frame_start, action = act)
 
         print("BP0010")
         return {'FINISHED'}
@@ -126,13 +157,14 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
         if len(selected_strips) == 1:
             # Create Initial Names
             props = context.window_manager.auto_twist_props
+            props.source_track_name = \
+                bpy.context.object.animation_data.nla_tracks.active.name
             props.source_strip_name = \
                 selected_strips[0].name
             props.source_action_name = \
                 selected_strips[0].action.name
             props.destination_track_name = \
-                bpy.context.object.animation_data.nla_tracks.active.name + \
-                TWISTED_TRAILER
+                props.source_track_name + TWISTED_TRAILER
             props.destination_strip_name = \
                 props.source_strip_name + TWISTED_TRAILER
             props.destination_action_name = \
