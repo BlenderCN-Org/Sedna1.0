@@ -25,3 +25,13 @@ characters =  (
     ("robot", "Robot", "Robot like motion"),
     ("real", "Real", "Real motion"),
     ("cartoon", "Cartoon", "Cartoon like motion"))
+
+# twist dictionary
+char_action = {
+    "dorothy"   :"Dorothy.twist",
+    "loris"     :"Loris.twist",
+    "maid_fox"  :"MaidFox.twist",
+    "robot"     :"Robot.twist",
+    "real"      :"Real.twist",
+    "cartoon"   :"Cartoon.twist"
+}

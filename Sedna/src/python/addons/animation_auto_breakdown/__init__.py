@@ -5,7 +5,7 @@ bl_info = {
     "version": (0, 0),
     "blender": (2, 79, 0),
     "location": "Dope Sheet > Key / NLA Editor > Edit",
-    "description": "Automatic Breakdown and related functions",
+    "description": "Automatic Breakdown & related functions",
     "warning": "",
     "support": "TESTING",
     "wiki_url": "",
@@ -66,6 +66,8 @@ translation_dict = {
             "Destination Strip",
         ("*", "Destination Action"):
             "Destination Action",
+        ("*", "Duplicate Object."):
+            "Duplicate Object.",
     },
     "ja_JP": {
         ("*", "Auto Breakdown: Enabled add-on 'Auto Breakdown'"):
@@ -118,6 +120,8 @@ translation_dict = {
             "変換後ストリップ",
         ("*", "Destination Action"):
             "変換後アクション",
+        ("*", "Duplicate Object."):
+            "オブジェクトが重複しています。",
     }
 }
 

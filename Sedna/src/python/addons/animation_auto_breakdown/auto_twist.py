@@ -24,6 +24,23 @@ TWISTED_TRAILER = "_Twist"
 # Action Target Bone Name
 ACT_TARGET = "Act_Target"
 
+# Source Pose Armature Layers
+SRC_POSE_LAYERS = [
+False,  False,  False,  False,  False,  False,  False,  False,
+False,  False,  False,  False,  False,  False,  False,  False,
+False,  False,  False,  False,  False,  False,  True,   True,
+False,  False,  False,  False,  False,  False,  False,  False
+]
+
+# Twist target Armature Layers
+TWIST_LAYERS = [
+False,  False,  False,  False,  False,  False,  False,  True,
+False,  False,  False,  False,  False,  False,  False,  False,
+False,  False,  False,  False,  False,  False,  True,   True,
+False,  False,  False,  False,  False,  False,  False,  False
+]
+
+
 class MySettings(bpy.types.PropertyGroup):
 
     source_track_name = bpy.props.StringProperty(
@@ -69,7 +86,14 @@ class MySettings(bpy.types.PropertyGroup):
     )
 
     msg_chk = bpy.props.StringProperty()
-    msg_icon = bpy.props.StringProperty()
+    msg_icon = bpy.props.StringProperty(
+        default = "NONE"    
+    )
+
+    res_msg = bpy.props.StringProperty()
+    res_icon = bpy.props.StringProperty(
+        default = "NONE"
+    )
 
     def check(self):
         if self.source_strip_name == "":
@@ -78,6 +102,10 @@ class MySettings(bpy.types.PropertyGroup):
         else:
             self.msg_chk = "OK"
             self.msg_icon = "INFO"
+
+    def result(self, msg, icon):
+        self.res_msg = bpy.app.translations.pgettext(msg)
+        self.res_icon = icon
 
 # Create Auto twisted Strip
 class CreateAutoTwistedStrip(bpy.types.Operator):
@@ -88,7 +116,10 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
+
         props = context.window_manager.auto_twist_props
+
+        props.result('Start', 'INFO')
 
         # GetSourceTruck
         src_track = bpy.context.object.animation_data.nla_tracks[\
@@ -102,23 +133,35 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
         # Crete NLA track
         if props.destination_track_name in \
             bpy.context.object.animation_data.nla_tracks:
-            track = bpy.context.object.animation_data.nla_tracks[\
-                props.destination_track_name]
+            if props.overwrite_data:
+                track = bpy.context.object.animation_data.nla_tracks[\
+                    props.destination_track_name]
+            else:
+                props.result('Duplicate Object.', 'ERROR')
+                return {'FINISHED'}
         else:
             track = bpy.context.object.animation_data.nla_tracks.new()
             track.name = props.destination_track_name
 
         # Create Action
         if props.destination_action_name in bpy.data.actions:
-            act = bpy.data.actions[props.destination_action_name]
+            if props.overwrite_data:
+                act = bpy.data.actions[props.destination_action_name]
+            else:
+                props.result('Duplicate Object.', 'ERROR')
+                return {'FINISHED'}
         else:
             act = bpy.data.actions.new(props.destination_action_name)
 
         # Create Strip
         if props.destination_strip_name in track.strips:
-            strip = track.strips[props.destination_strip_name]
+            if props.overwrite_data:
+                strip = track.strips[props.destination_strip_name]
+            else:
+                props.result('Duplicate Object.', 'ERROR')
+                return {'FINISHED'}
         else:
-            # Seek Same frame Strp
+            # Seek Same frame Strip
             find = False
             for x in track.strips:
                 if x.frame_start == frame_start:
@@ -129,7 +172,35 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
                 strip = track.strips.new(name = props.destination_strip_name,\
                     start = frame_start, action = act)
 
-        print("BP0010")
+        # Get Emotion on Character
+        armature_name = bpy.context.selected_objects[0].name
+        char_action_name = common.char_action(props.character)
+        char_emotion = {}
+        emotion_bone_name_list = utils_armature.get_bone_name_list(\
+            armature_name, SRC_POSE_LAYERS)
+
+        for i, x, y, z in enumerate(common.emotions, start=1):
+            emotion = utils_fcurve.get_pose(char_action_name, i, \
+                emotion_bone_name_list)
+            char_emotion.update({x: emotion})
+
+        # Get Source Action's Pose Dictionary
+        twist_bone_name_list = utils_armature.get_bone_name_list(\
+            armature_name, TWIST_LAYERS)
+
+        src_pose_dic = utils_fcurve.get_pose_dic(props.source_action_name, \
+            twist_bone_name_list)
+
+        # Create Twisted Pose
+        frames = src_pose_dic.keys()
+
+        for frame in frames:
+            NOP
+
+            # Set Pose
+            # utils_fcurve.set_pose(props.destination_action_name, frame, ?)
+
+
         return {'FINISHED'}
 
 # Add "Auto Breakdown" tab on Tool Shelf
@@ -143,10 +214,10 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
             # String displayed in the header of the menu that opened the tab
     #bl_context = "auto_twist"            # Context which show panel
 
-    # 本クラスの処理が実行可能かを判定する
+    # Determine whether this class of processing can be executed
     @classmethod
     def poll(cls, context):
-        # Stripが1個選択されている時のみメニューを表示させる
+        # Display menu only when 1 Strip is selected
         selected_strips = []
         try:
             selected_strips = [strip for strip in
@@ -214,6 +285,11 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
         props.check()
 
         box_row.label(text = props.msg_chk, icon=props.msg_icon)
+
+        row = layout.row()
+        box = row.box()
+        box_row = box.row()
+        box_row.label(text = props.res_msg, icon=props.res_icon)
 
         layout.operator(CreateAutoTwistedStrip.bl_idname, \
             text = bpy.app.translations.pgettext("Auto Twist"))
