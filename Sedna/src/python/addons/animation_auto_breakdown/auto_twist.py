@@ -87,7 +87,7 @@ class MySettings(bpy.types.PropertyGroup):
 
     msg_chk = bpy.props.StringProperty()
     msg_icon = bpy.props.StringProperty(
-        default = "NONE"    
+        default = "NONE"
     )
 
     res_msg = bpy.props.StringProperty()
@@ -174,15 +174,16 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
 
         # Get Emotion on Character
         armature_name = bpy.context.selected_objects[0].name
-        char_action_name = common.char_action(props.character)
+        char_action_name = common.char_action[props.character]
         char_emotion = {}
+
         emotion_bone_name_list = utils_armature.get_bone_name_list(\
             armature_name, SRC_POSE_LAYERS)
 
-        for i, x, y, z in enumerate(common.emotions, start=1):
+        for i, x in enumerate(common.emotions, start=1):
             emotion = utils_fcurve.get_pose(char_action_name, i, \
                 emotion_bone_name_list)
-            char_emotion.update({x: emotion})
+            char_emotion.update({x[0]: emotion})
 
         # Get Source Action's Pose Dictionary
         twist_bone_name_list = utils_armature.get_bone_name_list(\
@@ -195,10 +196,11 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
         frames = src_pose_dic.keys()
 
         for frame in frames:
-            NOP
+            pose = src_pose_dic[frame]
+            # Modify pose here
 
             # Set Pose
-            # utils_fcurve.set_pose(props.destination_action_name, frame, ?)
+            utils_fcurve.set_pose(props.destination_action_name, frame, pose)
 
 
         return {'FINISHED'}

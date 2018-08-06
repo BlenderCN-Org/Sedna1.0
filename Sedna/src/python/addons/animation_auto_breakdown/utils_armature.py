@@ -8,7 +8,7 @@ import bpy
 
 def is_valid_layer(src_list, tgt_list):
 	"""Check if there is a valid layer in both layers."""
-	for i, val in enumerate(src_lict):
+	for i, val in enumerate(src_list):
 		if val and tgt_list[i]:
 			return True
 	return False
@@ -19,3 +19,4 @@ def get_bone_name_list(armature_name, layer_list):
 	for bone in bpy.data.objects[armature_name].data.bones:
 		if is_valid_layer(bone.layers, layer_list):
 			ret.append(bone.name)
+	return ret
