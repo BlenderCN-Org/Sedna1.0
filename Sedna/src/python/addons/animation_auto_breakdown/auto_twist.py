@@ -143,15 +143,14 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
             track = bpy.context.object.animation_data.nla_tracks.new()
             track.name = props.destination_track_name
 
-        # Create Action
-        if props.destination_action_name in bpy.data.actions:
-            if props.overwrite_data:
-                act = bpy.data.actions[props.destination_action_name]
-            else:
+        # Copy Action
+        if props.destination_action_name in bpy.data.actions and \
+            props.overwrite_data == False:
                 props.result('Duplicate Object.', 'ERROR')
                 return {'FINISHED'}
-        else:
-            act = bpy.data.actions.new(props.destination_action_name)
+
+        act = bpy.data.actions[props.source_action_name].copy()
+        act.name = props.destination_action_name
 
         # Create Strip
         if props.destination_strip_name in track.strips:
@@ -200,7 +199,7 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
             # Modify pose here
 
             # Set Pose
-            utils_fcurve.set_pose(props.destination_action_name, frame, pose)
+            utils_fcurve.set_pose(act, frame, pose, twist_bone_name_list)
 
 
         return {'FINISHED'}

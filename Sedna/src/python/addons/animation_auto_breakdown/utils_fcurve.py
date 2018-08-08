@@ -80,19 +80,18 @@ def get_pose_dic(action_name, bone_name_list):
                 pos = [ keyframe_point.co[1], \
                     fcurves[i + 1].evaluate(frame), \
                     fcurves[i + 2].evaluate(frame) ]
-                ret[frame] = mathutils.Vector(pos)
+                ret.setdefault(frame, {})
+                ret[frame][bone_name] = mathutils.Vector(pos)
             i += 3
         else:
             i += 1
 
     return ret
 
-def set_pose(action_name, frame, pose):
+def set_pose(action, frame, pose, bone_name_list):
     '''Set Pose'''
-    if bpy.data.actions.find(action_name) < 0:
-        return
 
-    fcurves = bpy.data.actions[action_name].fcurves
+    fcurves = action.fcurves
 
     # remove old keyframe_points
     for fcurve in fcurves:
