@@ -10,11 +10,11 @@
 emotions =  (
     ("expectation", "Expectation", ""),      # (識別子, UI表示名, 説明文)
     ("joy", "Joy", ""),
-    ("acceptance", "Acceptance", ""),
+    ("reception", "Reception", ""),
     ("fear", "Fear", ""),
     ("surprise", "Surprise", ""),
     ("sorrow", "Sorrow", ""),
-    ("disgust", "Disgust", ""),
+    ("hatred", "Hatred", ""),
     ("anger", "Anger", ""))
 
 # characters
@@ -35,3 +35,6 @@ char_action = {
     "real"      :"Real.twist",
     "cartoon"   :"Cartoon.twist"
 }
+
+# Bone Position Max
+BONE_POS_MAX = 0.01

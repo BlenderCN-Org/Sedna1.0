@@ -5,7 +5,9 @@
 # 2018.07.08 Natukikazemizo
 
 import bpy
+import math
 import mathutils
+import re
 
 ###################
 # SUB FUNCTIONS
@@ -114,6 +116,26 @@ def create_act_dic(action, bone_list, frame_list):
 
     return ret
 
+def add_emotion(v_emo, emotion_dic, pose_dic, pos_max):
+    '''Add Emotion'''
+
+    if v_emo.length == 0:
+        return
+
+    v_x = mathutils.Vector((1, 0, 0))
+    rat_l = (math.pi - v_emo.angle(v_x)) * 2 / math.pi
+    rat_r = v_emo.angle(v_x) * 2 / math.pi
+
+    for key, v in emotion_dic.items():
+        if key in pose_dic:
+            if re.search(r"\.L[$\._]", key):
+                v_wk = rat_l * v_emo.length / pos_max * v
+            elif re.search(r"\.R[$\._]", key):
+                v_wk = rat_l * v_emo.length / pos_max * v
+            else:
+                v_wk = v_emo.length / pos_max * v
+            pose_dic[key] = pose_dic[key] + v_wk
+
 def set_pose(action, frame, pose, bone_list):
     '''Set Pose'''
 
@@ -131,7 +153,7 @@ def set_pose(action, frame, pose, bone_list):
     i = 0
     while i < len(fcurves):
         bone = get_location_bone(fcurves[i])
-        if bone in bone_list:
+        if bone in bone_list and bone in pose:
             add_keyframe_point(fcurves[i].keyframe_points, \
                 "KEYFRAME", frame, pose[bone][0])
             fcurves[i].update()

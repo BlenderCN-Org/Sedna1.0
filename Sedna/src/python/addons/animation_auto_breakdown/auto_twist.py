@@ -159,8 +159,8 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
                 props.result('Duplicate Object.', 'ERROR')
                 return {'FINISHED'}
 
-        act = bpy.data.actions[props.source_action_name].copy()
-        act.name = props.destination_action_name
+        dest_act = bpy.data.actions[props.source_action_name].copy()
+        dest_act.name = props.destination_action_name
 
         # Create Strip
         if props.destination_strip_name in track.strips:
@@ -179,7 +179,7 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
                     break
             if not find:
                 strip = track.strips.new(name = props.destination_strip_name,\
-                    start = frame_start, action = act)
+                    start = frame_start, action = dest_act)
 
         # Get Emotion on Character
         armature = bpy.context.selected_objects[0]
@@ -201,7 +201,7 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
         src_pose_dic = utils_fcurve.get_pose_dic(src_act, \
             twist_bone_list)
 
-        # Get Act Per Frame
+        # Get Action
         frames = src_pose_dic.keys()
         act_bone_list = utils_armature.get_bone_list(\
             armature, ACT_LAYERS)
@@ -209,16 +209,40 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
         act_dic = utils_fcurve.create_act_dic(src_act, \
             act_bone_list, frames)
 
-
-
         # Create Twisted Pose
-
-        for frame in frames:
+        for frame in sorted(frames):
             pose = src_pose_dic[frame]
-            # Modify pose here
+            act = act_dic[frame]
+
+            # Add emotions
+            utils_fcurve.add_emotion(act["Expectation_T"], \
+                char_emotion["expectation"], pose, common.BONE_POS_MAX)
+
+            utils_fcurve.add_emotion(act["Joy_T"], \
+                char_emotion["joy"], pose, common.BONE_POS_MAX)
+
+            utils_fcurve.add_emotion(act["Reception_T"], \
+                char_emotion["reception"], pose, common.BONE_POS_MAX)
+
+            utils_fcurve.add_emotion(act["Fear_T"], \
+                char_emotion["fear"], pose, common.BONE_POS_MAX)
+
+            utils_fcurve.add_emotion(act["Surprise_T"], \
+                char_emotion["surprise"], pose, common.BONE_POS_MAX)
+
+            utils_fcurve.add_emotion(act["Sorrow_T"], \
+                char_emotion["sorrow"], pose, common.BONE_POS_MAX)
+
+            utils_fcurve.add_emotion(act["Hatred_T"], \
+                char_emotion["hatred"], pose, common.BONE_POS_MAX)
+
+            utils_fcurve.add_emotion(act["Anger_T"], \
+                char_emotion["anger"], pose, common.BONE_POS_MAX)
+
+            # Turn to the target
 
             # Set Pose
-            utils_fcurve.set_pose(act, frame, pose, twist_bone_list)
+            utils_fcurve.set_pose(dest_act, frame, pose, twist_bone_list)
 
 
         return {'FINISHED'}
