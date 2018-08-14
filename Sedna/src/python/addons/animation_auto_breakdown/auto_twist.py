@@ -24,7 +24,7 @@ TWISTED_TRAILER = "_Twist"
 # Action Target Bone Name
 ACT_TARGET = "Act_Target"
 
-# Source Pose Armature Layers
+# Source pose bones Armature Layers
 SRC_POSE_LAYERS = [
 False,  False,  False,  False,  False,  False,  False,  False,
 False,  False,  False,  False,  False,  False,  False,  False,
@@ -32,11 +32,19 @@ False,  False,  False,  False,  False,  False,  True,   True,
 False,  False,  False,  False,  False,  False,  False,  False
 ]
 
-# Twist target Armature Layers
+# Twist target bones Armature Layers
 TWIST_LAYERS = [
-False,  False,  False,  False,  False,  False,  False,  True,
+False,  False,  False,  False,  False,  False,  True,   True,
 False,  False,  False,  False,  False,  False,  False,  False,
 False,  False,  False,  False,  False,  False,  True,   True,
+False,  False,  False,  False,  False,  False,  False,  False
+]
+
+# Act ctrl bones Armature Layers
+ACT_LAYERS = [
+False,  False,  False,  False,  False,  False,  True,  True,
+False,  False,  False,  False,  False,  False,  False,  False,
+False,  False,  False,  False,  False,  False,  False,  False,
 False,  False,  False,  False,  False,  False,  False,  False
 ]
 
@@ -128,6 +136,8 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
         # GetSourceStrip
         src_strip = src_track.strips[props.source_strip_name]
 
+        src_act = bpy.data.actions[props.source_action_name]
+
         frame_start = src_strip.frame_start
 
         # Crete NLA track
@@ -172,34 +182,43 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
                     start = frame_start, action = act)
 
         # Get Emotion on Character
-        armature_name = bpy.context.selected_objects[0].name
-        char_action_name = common.char_action[props.character]
+        armature = bpy.context.selected_objects[0]
+        char_act = bpy.data.actions[common.char_action[props.character]]
         char_emotion = {}
 
-        emotion_bone_name_list = utils_armature.get_bone_name_list(\
-            armature_name, SRC_POSE_LAYERS)
+        emotion_bone_list = utils_armature.get_bone_list(\
+            armature, SRC_POSE_LAYERS)
 
         for i, x in enumerate(common.emotions, start=1):
-            emotion = utils_fcurve.get_pose(char_action_name, i, \
-                emotion_bone_name_list)
+            emotion = utils_fcurve.get_pose(char_act, i, \
+                emotion_bone_list)
             char_emotion.update({x[0]: emotion})
 
         # Get Source Action's Pose Dictionary
-        twist_bone_name_list = utils_armature.get_bone_name_list(\
-            armature_name, TWIST_LAYERS)
+        twist_bone_list = utils_armature.get_bone_list(\
+            armature, TWIST_LAYERS)
 
-        src_pose_dic = utils_fcurve.get_pose_dic(props.source_action_name, \
-            twist_bone_name_list)
+        src_pose_dic = utils_fcurve.get_pose_dic(src_act, \
+            twist_bone_list)
+
+        # Get Act Per Frame
+        frames = src_pose_dic.keys()
+        act_bone_list = utils_armature.get_bone_list(\
+            armature, ACT_LAYERS)
+
+        act_dic = utils_fcurve.create_act_dic(src_act, \
+            act_bone_list, frames)
+
+
 
         # Create Twisted Pose
-        frames = src_pose_dic.keys()
 
         for frame in frames:
             pose = src_pose_dic[frame]
             # Modify pose here
 
             # Set Pose
-            utils_fcurve.set_pose(act, frame, pose, twist_bone_name_list)
+            utils_fcurve.set_pose(act, frame, pose, twist_bone_list)
 
 
         return {'FINISHED'}
