@@ -247,6 +247,9 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
 
         return {'FINISHED'}
 
+
+
+
 # Add "Auto Breakdown" tab on Tool Shelf
 class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
 

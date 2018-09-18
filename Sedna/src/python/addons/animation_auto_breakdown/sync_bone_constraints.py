@@ -10,11 +10,14 @@ if "bpy" in locals():
     import imp
     imp.reload(utils_io_csv)
     imp.reload(bone_constraints)
+    imp.reload(common)
 else:
     from . import utils_io_csv
     from . import bone_constraints
+    from . import common
 
 import bpy
+import re
 
 class StringValGroup(bpy.types.PropertyGroup):
     string_val = bpy.props.StringProperty()
@@ -44,6 +47,10 @@ class MySettings(bpy.types.PropertyGroup):
     msg_chk = bpy.props.StringProperty()
     msg_icon = bpy.props.StringProperty()
 
+
+    msg_x_miller_chk = bpy.props.StringProperty()
+    #msg_x_miller_icon = bpy.props.StringProperty()
+
     # リストで選択されているオブジェクトの名前
     #sel_armaturej= bpy.props.StringProperty()
 
@@ -53,6 +60,12 @@ class MySettings(bpy.types.PropertyGroup):
 
     # Drop Downリストに表示される値のリスト
     string_val_list = bpy.props.CollectionProperty(type=bpy.types.StringValGroup)
+
+    direction = bpy.props.EnumProperty(
+        name = "Direction",
+        description = "Select constraints copy dilection.",
+        items = common.directions
+    )
 
     def init_val_list(self):
         self.string_val_list.clear()
@@ -74,6 +87,11 @@ class MySettings(bpy.types.PropertyGroup):
             self.msg_chk = "OK"
             self.msg_icon = "INFO"
 
+
+
+    # def check_x_miller(self):
+    #     self.msg_x_miller_chk = "OK"
+    #     self.msg_x_miller_icon = "INFO"
 
 #    def update_val(self, nm):
 #        for sv in self.string_val_list:
@@ -463,6 +481,103 @@ class ImportBoneConstraints(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class XMillerTransformations(bpy.types.Operator):
+
+    bl_idname = "object.x_miller_transformations"
+    bl_label = "XMillerTransformations"
+    bl_description = "X-Axis Miller Bone Transformation constraings."
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+
+        props = context.window_manager.sync_bone_constraints_props
+
+        props.msg_x_miller_chk = bpy.app.translations.pgettext("Start.")
+
+        if props.direction == "l2r":
+            key = r"\.L($|\.|_)"
+            other_side = "R"
+        else:
+            key = r"\.R($|\.|_)"
+            other_side = "L"
+
+        for x in bpy.context.selected_pose_bones:
+
+            # SKIP Other side & Center bones
+            if re.search(key, x.name) is None:
+                continue
+
+            print(re.search(key, x.name) == False)
+
+            if len(x.constraints) == 0:
+                continue
+
+            for y in x.constraints:
+                if y.type == "TRANSFORM":
+                    print(x.name + ", " + y.name)
+
+                    # search other side bone & constraint
+
+                    other_side_bone_name =\
+                        common.get_otherside_name(key, other_side, x.name)
+                    other_side_tgt_name =\
+                        common.get_otherside_name(key, other_side, y.subtarget)
+
+                    x2 = x.id_data.pose.bones[other_side_bone_name]
+                    y2 = x2.constraints[y.name]
+
+
+                    # data.bone_name = x.name
+                    # data.constraint_name = y.name
+                    y2.mute = y.mute
+                    # y2.target = y.target.name
+                    y2.subtarget = other_side_tgt_name
+                    y2.use_motion_extrapolate = y.use_motion_extrapolate
+                    y2.from_min_x = y.from_min_x
+                    y2.from_max_x = y.from_max_x
+                    y2.from_min_y = y.from_min_y
+                    y2.from_max_y = y.from_max_y
+                    y2.from_min_z = y.from_min_z
+                    y2.from_max_z = y.from_max_z
+                    y2.map_to_x_from = y.map_to_x_from
+                    y2.map_to_y_from = y.map_to_y_from
+                    y2.map_to_z_from = y.map_to_z_from
+                    y2.map_to = y.map_to
+
+                    if y.map_to == "LOCATION":
+                        y2.to_min_x = y.to_min_x
+                        y2.to_max_x = y.to_max_x
+                        y2.to_min_y = y.to_min_y
+                        y2.to_max_y = y.to_max_y
+                        y2.to_min_z = y.to_min_z
+                        y2.to_max_z = y.to_max_z
+                    elif y.map_to == "ROTATION":
+                        y2.to_min_x = y.to_min_x_rot
+                        y2.to_max_x = y.to_max_x_rot
+                        y2.to_min_y = y.to_min_y_rot
+                        y2.to_max_y = y.to_max_y_rot
+                        y2.to_min_z = y.to_min_z_rot
+                        y2.to_max_z = y.to_max_z_rot
+                    else:
+                        # map_to:SCALE
+                        y2.to_min_x = y.to_min_x_scale
+                        y2.to_max_x = y.to_max_x_scale
+                        y2.to_min_y = y.to_min_y_scale
+                        y2.to_max_y = y.to_max_y_scale
+                        y2.to_min_z = y.to_min_z_scale
+                        y2.to_max_z = y.to_max_z_scale
+
+                    y2.target_space = y.target_space
+                    y2.owner_space = y.owner_space
+                    y2.influence = y.influence
+                    # y2.type = y.type
+
+        props.msg_x_miller_chk = bpy.app.translations.pgettext("Finished.")
+
+        return {'FINISHED'}
+
+
+
 # Add "Auto Breakdown" tab on Tool Shelf
 class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
 
@@ -562,4 +677,54 @@ class VIEW3D_PT_AutoBreakdown(bpy.types.Panel):
 #        layout.separator()
 
 #        layout.operator(SyncBonesIK.bl_idname, \
+
+
+# Add X-Miller Function Panel
+class VIEW3D_PT_XMiller(bpy.types.Panel):
+
+    bl_label = bpy.app.translations.pgettext("X-Miller Bone Transformations")
+              # String on TAB
+    bl_space_type = 'VIEW_3D'           # Area which show menu
+    bl_region_type = 'TOOLS'            # Region which show menu
+    bl_category = bpy.app.translations.pgettext("Auto Breakdown")
+            # String displayed in the header of the menu that opened the tab
+    bl_context = "posemode"            # Context which show panel
+
+    # 本クラスの処理が実行可能かを判定する
+    @classmethod
+    def poll(cls, context):
+        # オブジェクトが選択されている時のみメニューを表示させる
+        for o in bpy.data.objects:
+            if o.select:
+                return True
+        return False
+
+    # ヘッダーのカスタマイズ
+    def draw_header(self, context):
+        layout = self.layout
+        layout.label(text="", icon='PLUGIN')
+
+    # メニューの描画処理
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        props = context.window_manager.sync_bone_constraints_props
+
+
+        layout.prop(props, "direction", \
+            text=bpy.app.translations.pgettext("direction"))
+
+        layout.separator()
+
+        row = layout.row()
+        box = row.box()
+        box_row = box.row()
+
+        # props.check_x_miller()
+
+        box_row.label(text = props.msg_x_miller_chk, icon="NONE")
+
+        layout.operator(XMillerTransformations.bl_idname, \
+            text = bpy.app.translations.pgettext("Copy"))
+
 #            text = bpy.app.translations.pgettext("Sync IK"))

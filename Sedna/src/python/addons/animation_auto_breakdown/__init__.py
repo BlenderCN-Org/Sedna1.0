@@ -68,6 +68,14 @@ translation_dict = {
             "Destination Action",
         ("*", "Duplicate Object."):
             "Duplicate Object.",
+        ("*", "direction"):
+            "direction",
+        ("*", "Finished."):
+            "Finished.",
+        ("*", "Start."):
+            "Start.",
+        ("*", "X-Miller Bone Transformations"):
+            "X-Miller Bone Transformations",
     },
     "ja_JP": {
         ("*", "Auto Breakdown: Enabled add-on 'Auto Breakdown'"):
@@ -122,6 +130,14 @@ translation_dict = {
             "変換後アクション",
         ("*", "Duplicate Object."):
             "オブジェクトが重複しています。",
+        ("*", "direction"):
+            "方向",
+        ("*", "Finished."):
+            "処理完了。",
+        ("*", "Start."):
+            "処理開始。",
+        ("*", "X-Miller Bone Transformations"):
+            "ボーントランスフォーメーションのX軸反転",
     }
 }
 
@@ -196,6 +212,7 @@ def unregister():
 
     del bpy.types.WindowManager.auto_twist_props
     del bpy.types.WindowManager.sync_bone_constraints_props
+
     print(
         bpy.app.translations.pgettext(
             "Auto Breakdown: Disabled add-on 'Auto Breakdown'"

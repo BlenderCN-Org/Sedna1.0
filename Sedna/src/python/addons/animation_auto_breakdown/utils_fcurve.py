@@ -128,9 +128,9 @@ def add_emotion(v_emo, emotion_dic, pose_dic, pos_max):
 
     for key, v in emotion_dic.items():
         if key in pose_dic:
-            if re.search(r"\.L[$\._]", key):
+            if re.search(r"\.L($|\.|_)", key):
                 v_wk = rat_l * v_emo.length / pos_max * v
-            elif re.search(r"\.R[$\._]", key):
+            elif re.search(r"\.R($|\.|_)", key):
                 v_wk = rat_l * v_emo.length / pos_max * v
             else:
                 v_wk = v_emo.length / pos_max * v

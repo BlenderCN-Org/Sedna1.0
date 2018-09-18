@@ -6,6 +6,8 @@
 
 #﻿import bpy
 
+import re
+
 # emotions
 emotions =  (
     ("expectation", "Expectation", ""),      # (識別子, UI表示名, 説明文)
@@ -36,5 +38,19 @@ char_action = {
     "cartoon"   :"Cartoon.twist"
 }
 
+# directions
+directions = (
+    ("l2r", "Left to Right", "Left to Right"),
+    ("r2l", "Right to Left", "Right to Left"),
+)
+
 # Bone Position Max
 BONE_POS_MAX = 0.01
+
+
+def get_otherside_name(key, side, text):
+    print("text:" + text)
+    direction_pos = re.search(key, text).span(0)[0]
+    other_side_name = text[:direction_pos + 1] + side + \
+        text[direction_pos + 3:]
+    return other_side_name
