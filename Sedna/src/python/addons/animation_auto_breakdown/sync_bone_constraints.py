@@ -552,20 +552,20 @@ class XMillerTransformations(bpy.types.Operator):
                         y2.to_min_z = y.to_min_z
                         y2.to_max_z = y.to_max_z
                     elif y.map_to == "ROTATION":
-                        y2.to_min_x = y.to_min_x_rot
-                        y2.to_max_x = y.to_max_x_rot
-                        y2.to_min_y = y.to_min_y_rot
-                        y2.to_max_y = y.to_max_y_rot
-                        y2.to_min_z = y.to_min_z_rot
-                        y2.to_max_z = y.to_max_z_rot
+                        y2.to_min_x_rot = y.to_min_x_rot
+                        y2.to_max_x_rot = y.to_max_x_rot
+                        y2.to_min_y_rot = y.to_min_y_rot
+                        y2.to_max_y_rot = y.to_max_y_rot
+                        y2.to_min_z_rot = y.to_min_z_rot
+                        y2.to_max_z_rot = y.to_max_z_rot
                     else:
                         # map_to:SCALE
-                        y2.to_min_x = y.to_min_x_scale
-                        y2.to_max_x = y.to_max_x_scale
-                        y2.to_min_y = y.to_min_y_scale
-                        y2.to_max_y = y.to_max_y_scale
-                        y2.to_min_z = y.to_min_z_scale
-                        y2.to_max_z = y.to_max_z_scale
+                        y2.to_min_x_scale = y.to_min_x_scale
+                        y2.to_max_x_scale = y.to_max_x_scale
+                        y2.to_max_y_scale = y.to_max_y_scale
+                        y2.to_min_y_scale = y.to_min_y_scale
+                        y2.to_min_z_scale = y.to_min_z_scale
+                        y2.to_max_z_scale = y.to_max_z_scale
 
                     y2.target_space = y.target_space
                     y2.owner_space = y.owner_space

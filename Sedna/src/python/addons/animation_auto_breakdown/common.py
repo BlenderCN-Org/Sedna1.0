@@ -52,5 +52,5 @@ def get_otherside_name(key, side, text):
     print("text:" + text)
     direction_pos = re.search(key, text).span(0)[0]
     other_side_name = text[:direction_pos + 1] + side + \
-        text[direction_pos + 3:]
+        text[direction_pos + 2:]
     return other_side_name
