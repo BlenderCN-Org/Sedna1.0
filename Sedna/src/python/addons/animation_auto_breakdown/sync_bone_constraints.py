@@ -517,9 +517,12 @@ class XMillerTransformations(bpy.types.Operator):
                     print(x.name + ", " + y.name)
 
                     # search other side bone & constraint
-
                     other_side_bone_name =\
                         common.get_otherside_name(key, other_side, x.name)
+
+                    if re.search(key, y.subtarget) is None:
+                        continue
+                    
                     other_side_tgt_name =\
                         common.get_otherside_name(key, other_side, y.subtarget)
 
