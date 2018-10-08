@@ -209,10 +209,16 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
         act_dic = utils_fcurve.create_act_dic(src_act, \
             act_bone_list, frames)
 
+        # Get AllKeyFrame Position
+        src_position_dic = utils_fcurve.get_position_dic(src_act, \
+            twist_bone_list, frames)
+
         # Create Twisted Pose
         for frame in sorted(frames):
-            pose = src_pose_dic[frame]
+            pose = src_position_dic[frame]
             act = act_dic[frame]
+
+            print("frame:" + str(frame))
 
             # Add emotions
             utils_fcurve.add_emotion(act["Expectation_T"], \
@@ -242,6 +248,7 @@ class CreateAutoTwistedStrip(bpy.types.Operator):
             # Turn to the target
 
             # Set Pose
+            print("len(pose)" + str(len(pose)))
             utils_fcurve.set_pose(dest_act, frame, pose, twist_bone_list)
 
 

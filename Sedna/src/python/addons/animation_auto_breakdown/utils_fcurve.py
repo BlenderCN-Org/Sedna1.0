@@ -61,7 +61,7 @@ def get_pose(action, frame, bone_list):
     return ret
 
 def get_pose_dic(action, bone_list):
-    '''Get Pose Dictionary'''
+    '''Get All Keys of fcurves'''
     ret = {}
 
     # Check Parameters & Get Objects
@@ -75,6 +75,31 @@ def get_pose_dic(action, bone_list):
             for keyframe_point in fcurves[i].keyframe_points:
                 frame = int(keyframe_point.co[0])
                 pos = [ keyframe_point.co[1], \
+                    fcurves[i + 1].evaluate(frame), \
+                    fcurves[i + 2].evaluate(frame) ]
+                ret.setdefault(frame, {})
+                ret[frame][bone] = mathutils.Vector(pos)
+            i += 3
+        else:
+            i += 1
+
+    return ret
+
+
+def get_position_dic(action, bone_list, frames):
+    '''Get All position of all keyframes'''
+    ret = {}
+
+    # Check Parameters & Get Objects
+    fcurves = action.fcurves
+
+    # Create {frame:{bone:Vector}} Dictionary
+    i = 0
+    while i < len(fcurves):
+        bone = get_location_bone(fcurves[i])
+        if bone in bone_list:
+            for frame in sorted(frames):
+                pos = [fcurves[i].evaluate(frame), \
                     fcurves[i + 1].evaluate(frame), \
                     fcurves[i + 2].evaluate(frame) ]
                 ret.setdefault(frame, {})
