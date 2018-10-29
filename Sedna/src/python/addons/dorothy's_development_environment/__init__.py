@@ -4,8 +4,8 @@ bl_info = {
     "author": "N(Natukikazemizo)",
     "version": (0, 0),
     "blender": (2, 79, 0),
-    "location": "Branch line of the railroad",
-    "description": "Dorthy's SPECIAL COOL All-around Development Environment.",
+    "location": "Everywhere",
+    "description": "Development Environment of Dorthy by Dorohy for Dorothy.",
     "warning": "",
     "support": "TESTING",
     "wiki_url": "",
@@ -140,7 +140,7 @@ def register():
 
     print(
         bpy.app.translations.pgettext(
-            "DDE: Enabled add-on 'Dorothy's Development Environment'"
+            "DDE: Enabled add-on `Dorothy's Development Environment'"
         )
     )
 
@@ -152,7 +152,7 @@ def unregister():
 #    del bpy.types.WindowManager.sync_bone_constraints_props
     print(
         bpy.app.translations.pgettext(
-            "DDE: Disabled add-on 'Dorothy's Development Environment'"
+            "DDE: Disabled add-on `Dorothy's Development Environment`"
         )
     )
 
