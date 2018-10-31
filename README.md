@@ -31,6 +31,13 @@
 [上記の動画ファイルに対応した.blendファイルはこちら](https://bowlroll.net/file/134556)
 
 
+## 特記事項  
+### GitHub上に.blendファイルが含まれている事について  
+公開しているソースコードに.blendファイルが密結合であるため，公開ファイルに.blendファイルを含めています。  
+### .blendファイルに対して予定している施策
+* .blendファイルのサイズをできるだけ小さくする
+* .blendファイルからMesh等のデータをエクスポート/インポートするアドオンの開発
+
 ## License ライセンス
 This software is released under the MIT License, see License.txt.
 このソフトウェアは、MITライセンスのもとで公開されている。License.txtを見てください。
