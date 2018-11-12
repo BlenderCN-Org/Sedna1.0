@@ -7,8 +7,8 @@
 
 ## 開発環境  
 * Blender Version 2.79
-* Intel Core i5
-* 16 GB
+* CPU:Intel Core i5 64bit
+* MEMORY:16 GB
 
 ## 推奨ソフトウェア
 * GIMP
