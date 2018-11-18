@@ -49,6 +49,12 @@ This software is released under the MIT License, see License.txt.
 このソフトウェアは、MITライセンスのもとで公開されています。License.txtを見てください。
 ### ※ フォントファイル等の同梱ファイル/ソフトについては，それぞれのライセンスに従ってください。
 
+## 管理情報
+### スプレッドシート
+* [作業日次管理](https://docs.google.com/spreadsheets/d/1OcrweKcC3Z_rvI6SDFZMefqk4avaaWCaK5QpJZbVDw4/edit?usp=sharing)
+* [ドロシーの開発環境 #0030](https://docs.google.com/spreadsheets/d/1LNIvTehFkrCy4yKCg1GUygdJqgzFaAlVGfr02iVg37E/edit?usp=sharing)
+* [Sedna_タスク管理](https://docs.google.com/spreadsheets/d/1w9W4hoqAu6IpB3NDFco2QEChG7c-nqG_PMeA12Devko/edit?usp=sharing)
+
 ## その他詳細情報
 [こちらのwikiを参照してください](../../wiki/Home)
 
