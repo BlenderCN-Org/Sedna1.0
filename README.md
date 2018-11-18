@@ -26,8 +26,14 @@
 必要な手順はありません。
 
 ## 本プロジェクトで作成したアニメーション（自主制作アニメーション）：
-[ドロシーの開発環境#0010 ニコニコ動画版](http://www.nicovideo.jp/watch/sm31660526)  
-[ドロシーの開発環境#0010 youtube版](https://youtu.be/j0UhxwEl4is)  
+## 自主制作アニメーション：
+### ドロシーの開発環境#0020 "DUET" 曲目：宇宙戦艦ヤマト～オープニングテーマ～
+[ニコニコ動画版](https://t.co/Y8y2gcjrQ8)  
+[youtube版](https://t.co/eQK7ZWCr0Q)  
+
+### ドロシーの開発環境#0010
+[ニコニコ動画版](http://www.nicovideo.jp/watch/sm31660526)  
+[youtube版](https://youtu.be/j0UhxwEl4is)  
 [上記の動画ファイルに対応した.blendファイルはこちら](https://bowlroll.net/file/134556)
 
 
@@ -39,8 +45,9 @@
 * .blendファイルからMesh等のデータをエクスポート/インポートするアドオンの開発
 
 ## License ライセンス
-This software is released under the MIT License, see License.txt.
-このソフトウェアは、MITライセンスのもとで公開されている。License.txtを見てください。
+This software is released under the MIT License, see License.txt.  
+このソフトウェアは、MITライセンスのもとで公開されています。License.txtを見てください。
+### ※ フォントファイル等の同梱ファイル/ソフトについては，それぞれのライセンスに従ってください。
 
 ## その他詳細情報
 [こちらのwikiを参照してください](../../wiki/Home)
