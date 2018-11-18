@@ -7,8 +7,8 @@
 
 ## 開発環境  
 * Blender Version 2.79
-* Intel Core i5
-* 16 GB
+* CPU:Intel Core i5 64bit
+* MEMORY:16 GB
 
 ## 推奨ソフトウェア
 * GIMP
@@ -26,8 +26,14 @@
 必要な手順はありません。
 
 ## 本プロジェクトで作成したアニメーション（自主制作アニメーション）：
-[ドロシーの開発環境#0010 ニコニコ動画版](http://www.nicovideo.jp/watch/sm31660526)  
-[ドロシーの開発環境#0010 youtube版](https://youtu.be/j0UhxwEl4is)  
+## 自主制作アニメーション：
+### ドロシーの開発環境#0020 "DUET" 曲目：宇宙戦艦ヤマト～オープニングテーマ～
+[ニコニコ動画版](https://t.co/Y8y2gcjrQ8)  
+[youtube版](https://t.co/eQK7ZWCr0Q)  
+
+### ドロシーの開発環境#0010
+[ニコニコ動画版](http://www.nicovideo.jp/watch/sm31660526)  
+[youtube版](https://youtu.be/j0UhxwEl4is)  
 [上記の動画ファイルに対応した.blendファイルはこちら](https://bowlroll.net/file/134556)
 
 
@@ -39,8 +45,15 @@
 * .blendファイルからMesh等のデータをエクスポート/インポートするアドオンの開発
 
 ## License ライセンス
-This software is released under the MIT License, see License.txt.
-このソフトウェアは、MITライセンスのもとで公開されている。License.txtを見てください。
+This software is released under the MIT License, see License.txt.  
+このソフトウェアは、MITライセンスのもとで公開されています。License.txtを見てください。
+### ※ フォントファイル等の同梱ファイル/ソフトについては，それぞれのライセンスに従ってください。
+
+## 管理情報
+### スプレッドシート
+* [作業日次管理](https://docs.google.com/spreadsheets/d/1OcrweKcC3Z_rvI6SDFZMefqk4avaaWCaK5QpJZbVDw4/edit?usp=sharing)
+* [ドロシーの開発環境 #0030](https://docs.google.com/spreadsheets/d/1LNIvTehFkrCy4yKCg1GUygdJqgzFaAlVGfr02iVg37E/edit?usp=sharing)
+* [Sedna_タスク管理](https://docs.google.com/spreadsheets/d/1w9W4hoqAu6IpB3NDFco2QEChG7c-nqG_PMeA12Devko/edit?usp=sharing)
 
 ## その他詳細情報
 [こちらのwikiを参照してください](../../wiki/Home)
