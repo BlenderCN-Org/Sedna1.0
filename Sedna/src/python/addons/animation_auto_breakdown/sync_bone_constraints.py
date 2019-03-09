@@ -522,7 +522,7 @@ class XMillerTransformations(bpy.types.Operator):
 
                     if re.search(key, y.subtarget) is None:
                         continue
-                    
+
                     other_side_tgt_name =\
                         common.get_otherside_name(key, other_side, y.subtarget)
 
