@@ -42,7 +42,7 @@ FOLDER_FRAME_X_EXPAND_WAIT = 4
 FOLDER_FRAME_X_EXPAND = 18
 
 FILE_X_MARGIN = 0
-FILE_Y_MARGIN = 0.5
+FILE_Y_MARGIN = 0.2
 FILE_Z_MARGIN = 0.4
 
 FILE_FRAME_START_MARGIN = 4
@@ -65,6 +65,7 @@ file_parent_dic = {}
 folder_pos_dic = {}
 folder_num_name_dic = {"":"", ROOT_FOLDER_SHORT_NAME:ROOT_FOLDER_SHORT_NAME}
 file_cnt_dic = {}
+folder_end_frame_dic = {ROOT_FOLDER_SHORT_NAME:0}
 
 def get_file_num_name(folder_name):
     folder_num_name = folder_num_name_dic[folder_name]
@@ -80,6 +81,45 @@ def convert_folder_id(folder):
 
     return ret
 
+def clear_old_breakpoints(fcurve):
+    old_keyframe_index_list = []
+
+    for i, point in enumerate(fcurve.keyframe_points):
+        if point.co[0] != START_FRAME:
+            old_keyframe_index_list.append(i)
+
+    if len(old_keyframe_index_list) > 0:
+        old_keyframe_index_list.reverse()
+        for i in old_keyframe_index_list:
+            fcurve.keyframe_points.remove(fcurve.keyframe_points[i])
+        fcurve.update()
+
+def clear_all_old_breakpoints(fcurves):
+
+    clear_old_breakpoints(fcurves[F_CURVE_X_LOC])
+    clear_old_breakpoints(fcurves[F_CURVE_Y_LOC])
+    clear_old_breakpoints(fcurves[F_CURVE_Z_LOC])
+    clear_old_breakpoints(fcurves[F_CURVE_X_ROT])
+    clear_old_breakpoints(fcurves[F_CURVE_Y_ROT])
+    clear_old_breakpoints(fcurves[F_CURVE_Z_ROT])
+    clear_old_breakpoints(fcurves[F_CURVE_X_SCA])
+    clear_old_breakpoints(fcurves[F_CURVE_Y_SCA])
+    clear_old_breakpoints(fcurves[F_CURVE_Z_SCA])
+
+def add_location_key_frame(fcurves, frame, x, y, z):
+    add_keyframe_point(fcurves[F_CURVE_X_LOC], frame, x)
+    add_keyframe_point(fcurves[F_CURVE_Y_LOC], frame, y)
+    add_keyframe_point(fcurves[F_CURVE_Z_LOC], frame, z)
+
+def add_rotation_key_rrame(fcurves, frame, x, y, z):
+    add_keyframe_point(fcurves[F_CURVE_X_ROT], frame, x)
+    add_keyframe_point(fcurves[F_CURVE_Y_ROT], frame, y)
+    add_keyframe_point(fcurves[F_CURVE_Z_ROT], frame, z)
+
+def add_scale_key_frame(fcurves, frame, x, y, z):
+    add_keyframe_point(fcurves[F_CURVE_X_SCA], frame, x)
+    add_keyframe_point(fcurves[F_CURVE_Y_SCA], frame, y)
+    add_keyframe_point(fcurves[F_CURVE_Z_SCA], frame, z)
 
 
 # get file list
@@ -132,7 +172,8 @@ def dupObject(src_name, dup_name):
 
 def create_folder_num_name(folder_name):
     if folder_name not in folder_num_name_dic:
-        folder_num_name_dic[folder_name] = NEW_FOLDER_NAME + str(len(folder_num_name_dic) + 1).zfill(FOLDER_ZFILL)
+        folder_num_name_dic[folder_name] = NEW_FOLDER_NAME \
+            + str(len(folder_num_name_dic) + 1).zfill(FOLDER_ZFILL)
         
 def create_action(object_name):
     action_name = object_name + ACTION_SUFFIX
@@ -163,15 +204,14 @@ def create_folder_mesh(parent_folder_name, folder_name):
     
     act = bpy.data.objects[num_name].animation_data.action
 
+    # remove old keyframes
+    clear_all_old_breakpoints(act.fcurves)
+
     # set start location
-    act.fcurves[F_CURVE_X_LOC].keyframe_points[0].co = (1000.0, 0)
-    act.fcurves[F_CURVE_Y_LOC].keyframe_points[0].co = (1000.0, 0)
-    act.fcurves[F_CURVE_Z_LOC].keyframe_points[0].co = (1000.0, 0)
+    add_location_key_frame(act.fcurves, 1000, 0, 0, 0)
     
     # set start scale
-    act.fcurves[F_CURVE_X_SCA].keyframe_points[0].co = (1000.0, SCALE_STORAGE)
-    act.fcurves[F_CURVE_Y_SCA].keyframe_points[0].co = (1000.0, SCALE_STORAGE)
-    act.fcurves[F_CURVE_Z_SCA].keyframe_points[0].co = (1000.0, SCALE_STORAGE)
+    add_scale_key_frame(act.fcurves, 1000, SCALE_STORAGE, SCALE_STORAGE, SCALE_STORAGE)
 
 def create_file_mesh(file_name):
     """
@@ -190,24 +230,23 @@ def create_file_mesh(file_name):
     
     # Enable Render
     bpy.data.objects[file_name].hide_render = False
-    
+
+    # Create new Action on new Object
+    create_action(file_name)
         
     act = bpy.data.objects[file_name].animation_data.action
 
+    # remove old keyframes
+    clear_all_old_breakpoints(act.fcurves)
+
     # set start location
-    act.fcurves[F_CURVE_X_LOC].keyframe_points[0].co = (1000.0, 0)
-    act.fcurves[F_CURVE_Y_LOC].keyframe_points[0].co = (1000.0, 0)
-    act.fcurves[F_CURVE_Z_LOC].keyframe_points[0].co = (1000.0, 0)
+    add_location_key_frame(act.fcurves, 1000, 0, 0, 0)
 
     # set start rotation
-    act.fcurves[F_CURVE_X_ROT].keyframe_points[0].co = (1000.0, 0)
-    act.fcurves[F_CURVE_Y_ROT].keyframe_points[0].co = (1000.0, 0)
-    act.fcurves[F_CURVE_Z_ROT].keyframe_points[0].co = (1000.0, 0)
+    add_rotation_key_rrame(act.fcurves, 1000, 0, 0, 0)
     
     # set start scale
-    act.fcurves[F_CURVE_X_SCA].keyframe_points[0].co = (1000.0, SCALE_STORAGE)
-    act.fcurves[F_CURVE_Y_SCA].keyframe_points[0].co = (1000.0, SCALE_STORAGE)
-    act.fcurves[F_CURVE_Z_SCA].keyframe_points[0].co = (1000.0, SCALE_STORAGE)
+    add_scale_key_frame(act.fcurves, 1000, SCALE_STORAGE, SCALE_STORAGE, SCALE_STORAGE)
     
 
 def set_obj_parent(parent_name, obj_name):
@@ -273,15 +312,39 @@ def func_main(arg, level_list):
         create_file_mesh(file_num_name)
         file_cnt_dic[parent_folder] = (file_num_name, file_cnt)
 
+def add_keyframe_point(fcurve, frame, value):
+    
+    # find same frame keyframe_point
+    index = 0
+    find_frame = False
+    for i, point in enumerate(fcurve.keyframe_points):
+        if point.co[0] == frame:
+            index = i
+            find_frame = True
+            break
+    
+    if find_frame == False:
+        # add keyframe_point when same frame not found
+        fcurve.keyframe_points.add(1)
+        index = len(fcurve.keyframe_points) - 1
+
+    # setup keyframe        
+    fcurve.keyframe_points[index].type =  "BREAKDOWN"
+    fcurve.keyframe_points[index].co =  frame, value
+    fcurve.keyframe_points[index].handle_left = frame - 0.5, value
+    fcurve.keyframe_points[index].handle_right = frame + 0.5, value
+        
+    
+
+    
+    
+
 def setupFolders():
 
     # reset root folder size
     act = bpy.data.objects[ROOT_FOLDER_SHORT_NAME].animation_data.action
     # set start scale
-    act.fcurves[F_CURVE_X_SCA].keyframe_points[0].co = (1000.0, SCALE_NORMAL)
-    act.fcurves[F_CURVE_Y_SCA].keyframe_points[0].co = (1000.0, SCALE_NORMAL)
-    act.fcurves[F_CURVE_Z_SCA].keyframe_points[0].co = (1000.0, SCALE_NORMAL)
-
+    add_scale_key_frame(act.fcurves, 1000, SCALE_NORMAL, SCALE_NORMAL, SCALE_NORMAL)
 
     for folder_name, pos in folder_pos_dic.items():
         
@@ -292,14 +355,86 @@ def setupFolders():
         parent_folder_name, index, level = pos
         
         # set parent object
-        set_obj_parent(folder_num_name_dic[parent_folder_name], folder_num_name_dic[folder_name])
+        folder_num_name  = folder_num_name_dic[folder_name]
+        set_obj_parent(folder_num_name_dic[parent_folder_name], \
+            folder_num_name)
         
+        # calc start frame
+        frame = START_FRAME + level * (FOLDER_FRAME_START_MARGIN + \
+            FOLDER_FRAME_Z_EXPAND \
+            + FOLDER_FRAME_X_EXPAND_WAIT + FOLDER_FRAME_X_EXPAND)
+        
+        # get fcurves
+        fcurves = bpy.data.objects[folder_num_name].animation_data.action.fcurves
+        
+        # add move start key_frame
+        frame +=  FOLDER_FRAME_START_MARGIN
+        add_location_key_frame(fcurves, frame, 0, 0, 0)
+        add_scale_key_frame(fcurves, frame, SCALE_STORAGE, SCALE_STORAGE, \
+            SCALE_STORAGE)
+            
+        # add Z expand end key_frame
+        frame += FOLDER_FRAME_Z_EXPAND
+        add_location_key_frame(fcurves, frame, 0, FOLDER_Y_MARGIN, FOLDER_Z_MARGIN)
+        add_scale_key_frame(fcurves, frame, SCALE_NORMAL, SCALE_NORMAL, \
+            SCALE_NORMAL)
+        
+        # add X expand wait key_frame
+        frame += FOLDER_FRAME_X_EXPAND_WAIT
+        add_location_key_frame(fcurves, frame, 0, FOLDER_Y_MARGIN, FOLDER_Z_MARGIN)        
+
+        # add X expand end key_frame
+        frame += FOLDER_FRAME_X_EXPAND
+        add_location_key_frame(fcurves, frame, FOLDER_X_MARGIN * index, \
+            FOLDER_Y_MARGIN, FOLDER_Z_MARGIN)        
+        
+        # update fcurve
+        fcurves.update()
+        
+        # add folder motion end frame to dic
+        folder_end_frame_dic[folder_name] = frame
 
 
 def setupFiles():
     for parent_folder, val in file_cnt_dic.items():
-        set_obj_parent(folder_num_name_dic[parent_folder], val[0])
         
+        file_num_name, file_cnt = val
+
+        set_obj_parent(folder_num_name_dic[parent_folder], file_num_name)
+
+        # get fcurves
+        fcurves = bpy.data.objects[file_num_name].animation_data.action.fcurves
+
+        # get start frame
+        frame = folder_end_frame_dic[parent_folder]
+        
+        # add move start key frame
+        frame += FILE_FRAME_START_MARGIN
+        add_location_key_frame(fcurves, frame, 0, 0, 0)
+        add_rotation_key_rrame(fcurves, frame, 0, 0, 0)
+        add_scale_key_frame(fcurves, frame, SCALE_STORAGE, SCALE_STORAGE, \
+            SCALE_STORAGE)
+        
+        # add x rot end key frame
+        frame += FILE_FRAME_X_ROT
+        add_location_key_frame(fcurves, frame, FILE_X_MARGIN, FILE_Y_MARGIN, \
+             FILE_Z_MARGIN)
+        add_rotation_key_rrame(fcurves, frame, math.pi / 2, 0, 0)
+        add_scale_key_frame(fcurves, frame, SCALE_NORMAL, SCALE_NORMAL, \
+            SCALE_NORMAL)
+
+        # add y expand start key frame
+        frame += FILE_FRAME_Y_EXPAND_WAIT
+        add_scale_key_frame(fcurves, frame, SCALE_NORMAL, SCALE_NORMAL, \
+            SCALE_NORMAL)
+        
+        # add y expand end key frame
+        frame += FILE_FRAME_Y_EXPAND
+        add_scale_key_frame(fcurves, frame, SCALE_NORMAL, \
+            SCALE_NORMAL * file_cnt, SCALE_NORMAL)
+
+        # update fcurve
+        fcurves.update()
 
 # START
 print("### start ###")
