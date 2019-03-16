@@ -4,6 +4,7 @@ renderResults
 renderResults_004
 renderResults_Retake
 renderResults_Retake_002
+folder_tree
 Sedna/data/in.txt
 Sedna/data/test.txt
 Sedna/data/out.txt
@@ -31,3 +32,4 @@ Sedna/src/python/addons/animation_auto_breakdown/__pycache__/auto_breakdown.cpyt
 Sedna/src/python/addons/sample_2_8_1.py
 Sedna/src/python/addons/sample_2_8_2.py
 Sedna/src/python/addons/sample_2_9.py
+Sedna/data/FolderList.txt

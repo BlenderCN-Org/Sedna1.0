@@ -17,6 +17,9 @@ SEED_FOLDER_NAME = 'Folder'
 SEED_FILE_NAME = 'File'
 ROOT_FOLDER = "C:/SRC/blender"
 ROOT_FOLDER_ORG_NAME = "blender-2.79b"
+# DEF FOR TEST
+#ROOT_FOLDER = "C:/tmp/folder_tree_test/"
+#ROOT_FOLDER_ORG_NAME = "root"
 ROOT_FOLDER_SHORT_NAME = "bl"
 
 ACTION_SUFFIX = 'Action'
@@ -60,12 +63,26 @@ F_CURVE_X_SCA = 6
 F_CURVE_Y_SCA = 7
 F_CURVE_Z_SCA = 8
 
-
+# Global dic
 file_parent_dic = {}
-folder_pos_dic = {}
+folder_pos_dic = {ROOT_FOLDER_SHORT_NAME:("", 0, 0, 0)}
+FOLDER_POS_PARENT_FOLDER_NAME = 0
+FOLDER_POS_INDEX = 1
+FOLDER_POS_LEVEL = 2
+FOLDER_POS_ABSOLUTE_INDEX = 3
+
 folder_num_name_dic = {"":"", ROOT_FOLDER_SHORT_NAME:ROOT_FOLDER_SHORT_NAME}
 file_cnt_dic = {}
 folder_end_frame_dic = {ROOT_FOLDER_SHORT_NAME:0}
+
+# Global params
+folder_absolute_index = 0
+
+# File I/O
+FOLDER_LIST_FILE_NAME="FolderList.txt" 
+root_path = bpy.path.abspath("//") + "data/"
+text_file = open(root_path + FOLDER_LIST_FILE_NAME, mode = 'w')
+    
 
 def get_file_num_name(folder_name):
     folder_num_name = folder_num_name_dic[folder_name]
@@ -153,6 +170,7 @@ def print_file(file_name, level_list, last):
             t += '+'
 
     print(t + file_name)
+    text_file.write(t + file_name + '\n')
 
 def dupObject(src_name, dup_name):
     """
@@ -187,13 +205,20 @@ def create_folder_mesh(parent_folder_name, folder_name):
     """
     create folder mesh
     """
-    print("folder:" + folder_name)
-    print("parent:" + parent_folder_name)
+    
     
     create_folder_num_name(folder_name)
     
     # duplicate object
     num_name = folder_num_name_dic[folder_name]
+
+    # delete org
+    # Enable hire when you want to delete objects 
+    #if bpy.data.objects.find(num_name) > 0:    
+    #    bpy.ops.object.select_all(action='DESELECT')
+    #    bpy.data.objects[num_name].select = True
+    #    bpy.ops.object.delete()
+
     dupObject(SEED_FOLDER_NAME , num_name)
     
     # Enable Render
@@ -265,6 +290,7 @@ def func_main(arg, level_list):
     """
     MAIN
     """
+    global folder_absolute_index
     root, folders, files, parent_folder = arg
 
     folder_len = len(folders)
@@ -275,13 +301,21 @@ def func_main(arg, level_list):
     for i, folder_name in enumerate(folders):
         nounder = (i == folder_len - 1 and file_len == 0)
         
-        folder_id = parent_folder + FOLDER_SPLITTER + folder_name
+        
+        folder_id = folder_name
+        # Replace root folder name to short name
+        if folder_id == ROOT_FOLDER_ORG_NAME:
+            folder_id = ROOT_FOLDER_SHORT_NAME
+            
+        if parent_folder != "":
+            folder_id = parent_folder + FOLDER_SPLITTER + folder_id
 
         create_folder_mesh(parent_folder, folder_id)
-        
         print_file('<' + folder_id + '>', level_list, nounder)
         
-        folder_pos_dic[folder_id] = (parent_folder, i, len(level_list))
+        folder_pos_dic[folder_id] = (parent_folder, i, len(level_list),  \
+            folder_absolute_index)
+        folder_absolute_index += 1
 
         # Output subfolder's subfolder
 
@@ -352,12 +386,23 @@ def setupFolders():
         if folder_name == ROOT_FOLDER_SHORT_NAME:
             continue
         
-        parent_folder_name, index, level = pos
+        parent_folder_name, index, level, absolute_index = pos
+        
+        # Calclate folder relative index
+        folder_num_name  = folder_num_name_dic[folder_name]
+        parent_absolute_index = 0
+        
+        if parent_folder_name != "":
+            parent_absolute_index = \
+                folder_pos_dic[parent_folder_name][FOLDER_POS_ABSOLUTE_INDEX]
+                
+        relative_index = absolute_index - parent_absolute_index
         
         # set parent object
-        folder_num_name  = folder_num_name_dic[folder_name]
         set_obj_parent(folder_num_name_dic[parent_folder_name], \
             folder_num_name)
+        
+        
         
         # calc start frame
         frame = START_FRAME + level * (FOLDER_FRAME_START_MARGIN + \
@@ -385,8 +430,12 @@ def setupFolders():
 
         # add X expand end key_frame
         frame += FOLDER_FRAME_X_EXPAND
-        add_location_key_frame(fcurves, frame, FOLDER_X_MARGIN * index, \
+        add_location_key_frame(fcurves, frame, FOLDER_X_MARGIN * relative_index, \
             FOLDER_Y_MARGIN, FOLDER_Z_MARGIN)        
+        
+        # write log
+        text_file.write(folder_num_name + ":" + str(relative_index).zfill(4) + ":" +  parent_folder_name + ":" + folder_name + '\n')
+        
         
         # update fcurve
         fcurves.update()
@@ -442,4 +491,5 @@ create_folder_mesh("", ROOT_FOLDER_SHORT_NAME)
 func_main(file_list.pop(0), [])
 setupFolders()
 setupFiles()
+text_file.close()
 print("### end ###")
