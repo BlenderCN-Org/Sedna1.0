@@ -38,17 +38,32 @@ SCALE_NORMAL = 1.0
 FOLDER_X_MARGIN = 0.7
 FOLDER_Y_MARGIN = 0.7
 FOLDER_Z_MARGIN = 0.48
+FOLDER_LEVEL1_Y_MARGIN = 2
 
 FOLDER_FRAME_START_MARGIN = 4
 FOLDER_FRAME_Z_EXPAND = 12
+FOLDER_FRAME_RESIZE_WAIT = 4
+FOLDER_FRAME_RESIZE = 8
 FOLDER_FRAME_X_EXPAND_WAIT = 4
 FOLDER_FRAME_X_EXPAND = 18
+folder_motion_list = [
+     FOLDER_FRAME_START_MARGIN
+    ,FOLDER_FRAME_Z_EXPAND
+    ,FOLDER_FRAME_RESIZE_WAIT
+    ,FOLDER_FRAME_RESIZE
+    ,FOLDER_FRAME_X_EXPAND_WAIT
+    ,FOLDER_FRAME_X_EXPAND]
+
 
 FILE_X_MARGIN = 0
 FILE_Y_MARGIN = 0.2
 FILE_Z_MARGIN = 0.4
 
 FILE_FRAME_START_MARGIN = 4
+FILE_FRAME_Z_EXPAND = 12
+FILE_FRAME_RESIZE_WAIT = 4
+FILE_FRAME_RESIZE = 8
+FILE_FRAME_X_ROT_WAIT = 4
 FILE_FRAME_X_ROT = 8
 FILE_FRAME_Y_EXPAND_WAIT = 4
 FILE_FRAME_Y_EXPAND = 18
@@ -73,7 +88,10 @@ FOLDER_POS_ABSOLUTE_INDEX = 3
 
 folder_num_name_dic = {"":"", ROOT_FOLDER_SHORT_NAME:ROOT_FOLDER_SHORT_NAME}
 file_cnt_dic = {}
-folder_end_frame_dic = {ROOT_FOLDER_SHORT_NAME:0}
+folder_end_frame_dic = {ROOT_FOLDER_SHORT_NAME:START_FRAME}
+
+# Global list
+level1_folder_list = []
 
 # Global params
 folder_absolute_index = 0
@@ -128,7 +146,7 @@ def add_location_key_frame(fcurves, frame, x, y, z):
     add_keyframe_point(fcurves[F_CURVE_Y_LOC], frame, y)
     add_keyframe_point(fcurves[F_CURVE_Z_LOC], frame, z)
 
-def add_rotation_key_rrame(fcurves, frame, x, y, z):
+def add_rotation_key_frame(fcurves, frame, x, y, z):
     add_keyframe_point(fcurves[F_CURVE_X_ROT], frame, x)
     add_keyframe_point(fcurves[F_CURVE_Y_ROT], frame, y)
     add_keyframe_point(fcurves[F_CURVE_Z_ROT], frame, z)
@@ -268,7 +286,7 @@ def create_file_mesh(file_name):
     add_location_key_frame(act.fcurves, 1000, 0, 0, 0)
 
     # set start rotation
-    add_rotation_key_rrame(act.fcurves, 1000, 0, 0, 0)
+    add_rotation_key_frame(act.fcurves, 1000, 0, 0, 0)
     
     # set start scale
     add_scale_key_frame(act.fcurves, 1000, SCALE_STORAGE, SCALE_STORAGE, SCALE_STORAGE)
@@ -313,8 +331,12 @@ def func_main(arg, level_list):
         create_folder_mesh(parent_folder, folder_id)
         print_file('<' + folder_id + '>', level_list, nounder)
         
-        folder_pos_dic[folder_id] = (parent_folder, i, len(level_list),  \
+        level = len(level_list)
+        folder_pos_dic[folder_id] = (parent_folder, i, level,  \
             folder_absolute_index)
+        if level == 1:
+            level1_folder_list.append(folder_id)
+            
         folder_absolute_index += 1
 
         # Output subfolder's subfolder
@@ -368,9 +390,7 @@ def add_keyframe_point(fcurve, frame, value):
     fcurve.keyframe_points[index].handle_left = frame - 0.5, value
     fcurve.keyframe_points[index].handle_right = frame + 0.5, value
         
-    
 
-    
     
 
 def setupFolders():
@@ -405,9 +425,7 @@ def setupFolders():
         
         
         # calc start frame
-        frame = START_FRAME + level * (FOLDER_FRAME_START_MARGIN + \
-            FOLDER_FRAME_Z_EXPAND \
-            + FOLDER_FRAME_X_EXPAND_WAIT + FOLDER_FRAME_X_EXPAND)
+        frame = START_FRAME + level * sum(folder_motion_list)
         
         # get fcurves
         fcurves = bpy.data.objects[folder_num_name].animation_data.action.fcurves
@@ -415,27 +433,41 @@ def setupFolders():
         # add move start key_frame
         frame +=  FOLDER_FRAME_START_MARGIN
         add_location_key_frame(fcurves, frame, 0, 0, 0)
-        add_scale_key_frame(fcurves, frame, SCALE_STORAGE, SCALE_STORAGE, \
-            SCALE_STORAGE)
             
         # add Z expand end key_frame
         frame += FOLDER_FRAME_Z_EXPAND
-        add_location_key_frame(fcurves, frame, 0, FOLDER_Y_MARGIN, FOLDER_Z_MARGIN)
+        add_location_key_frame(fcurves, frame, 0, FOLDER_Y_MARGIN, \
+            FOLDER_Z_MARGIN * index)
+
+        # add resize wait key_frame
+        frame += FOLDER_FRAME_RESIZE_WAIT
+        add_scale_key_frame(fcurves, frame, SCALE_STORAGE, SCALE_STORAGE, \
+            SCALE_STORAGE)
+        
+        # add resize end key_frame
+        frame += FOLDER_FRAME_RESIZE
         add_scale_key_frame(fcurves, frame, SCALE_NORMAL, SCALE_NORMAL, \
             SCALE_NORMAL)
-        
+
         # add X expand wait key_frame
         frame += FOLDER_FRAME_X_EXPAND_WAIT
-        add_location_key_frame(fcurves, frame, 0, FOLDER_Y_MARGIN, FOLDER_Z_MARGIN)        
+        add_location_key_frame(fcurves, frame, 0, FOLDER_Y_MARGIN, \
+            FOLDER_Z_MARGIN * index)        
 
-        # add X expand end key_frame
+        # add X or Y expand end key_frame
         frame += FOLDER_FRAME_X_EXPAND
-        add_location_key_frame(fcurves, frame, FOLDER_X_MARGIN * relative_index, \
-            FOLDER_Y_MARGIN, FOLDER_Z_MARGIN)        
-        
+        if level == 1:
+            pos = level1_folder_list.index(folder_name)
+            add_location_key_frame(fcurves, frame, FOLDER_X_MARGIN, \
+                FOLDER_LEVEL1_Y_MARGIN * (pos + 1), FOLDER_Z_MARGIN)        
+        else:
+            add_location_key_frame(fcurves, frame, FOLDER_X_MARGIN * relative_index, \
+                FOLDER_Y_MARGIN, FOLDER_Z_MARGIN)        
+            
         # write log
-        text_file.write(folder_num_name + ":" + str(relative_index).zfill(4) + ":" +  parent_folder_name + ":" + folder_name + '\n')
-        
+        text_file.write(folder_num_name + ":" + str(relative_index).zfill(4) \
+            + ":" + str(level).zfill(3) \
+            + ":" +  parent_folder_name + ":" + folder_name + '\n')
         
         # update fcurve
         fcurves.update()
@@ -449,6 +481,10 @@ def setupFiles():
         
         file_num_name, file_cnt = val
 
+        ## write log
+        #text_file.write(file_num_name + ":" + str(file_cnt).zfill(4) + '\n')
+        
+        # Set parent object
         set_obj_parent(folder_num_name_dic[parent_folder], file_num_name)
 
         # get fcurves
@@ -460,19 +496,37 @@ def setupFiles():
         # add move start key frame
         frame += FILE_FRAME_START_MARGIN
         add_location_key_frame(fcurves, frame, 0, 0, 0)
-        add_rotation_key_rrame(fcurves, frame, 0, 0, 0)
+        
+        # add z expand end keyFrame
+        frame += FILE_FRAME_Z_EXPAND
+        add_location_key_frame(fcurves, frame, FILE_X_MARGIN, 0, \
+            FILE_Z_MARGIN)
+            
+        # add resize wait keyFrame
+        frame += FILE_FRAME_RESIZE_WAIT
         add_scale_key_frame(fcurves, frame, SCALE_STORAGE, SCALE_STORAGE, \
             SCALE_STORAGE)
         
-        # add x rot end key frame
-        frame += FILE_FRAME_X_ROT
-        add_location_key_frame(fcurves, frame, FILE_X_MARGIN, FILE_Y_MARGIN, \
-             FILE_Z_MARGIN)
-        add_rotation_key_rrame(fcurves, frame, math.pi / 2, 0, 0)
+        # add resize end keyFrame
+        frame += FILE_FRAME_RESIZE
+        add_location_key_frame(fcurves, frame, FILE_X_MARGIN, 0, \
+            FILE_Z_MARGIN)
         add_scale_key_frame(fcurves, frame, SCALE_NORMAL, SCALE_NORMAL, \
             SCALE_NORMAL)
 
-        # add y expand start key frame
+        # add x rot WAIT key frame
+        frame += FILE_FRAME_X_ROT_WAIT
+        add_rotation_key_frame(fcurves, frame, 0, 0, 0)
+        
+        # add x rot end key frame
+        frame += FILE_FRAME_X_ROT
+        add_location_key_frame(fcurves, frame, FILE_X_MARGIN, 0, \
+            FILE_Z_MARGIN)
+        add_rotation_key_frame(fcurves, frame, math.pi / 2, 0, 0)
+        add_scale_key_frame(fcurves, frame, SCALE_NORMAL, SCALE_NORMAL, \
+            SCALE_NORMAL)
+
+        # add y expand wait key frame
         frame += FILE_FRAME_Y_EXPAND_WAIT
         add_scale_key_frame(fcurves, frame, SCALE_NORMAL, SCALE_NORMAL, \
             SCALE_NORMAL)
