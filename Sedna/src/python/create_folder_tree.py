@@ -35,6 +35,7 @@ FPS = 12
 SCALE_STORAGE = 0.5
 SCALE_NORMAL = 1.0
 
+# Folder Constants
 FOLDER_X_MARGIN = 0.7
 FOLDER_Y_MARGIN = 0.7
 FOLDER_Z_MARGIN = 0.48
@@ -54,7 +55,22 @@ folder_motion_list = [
     ,FOLDER_FRAME_X_EXPAND_WAIT
     ,FOLDER_FRAME_X_EXPAND]
 
+# Folder Name Constants
+FOLDER_NAME_PREFIX = "FolderName_"
 
+FOLDER_NAME_X_MARGIN = -0.2
+
+FOLDER_NAME_SCALE_STOREGE = 0.03
+FOLDER_NAME_ROT_X = -1 * math.pi / 9
+
+FOLDER_NAME_FRAME_START_MARGIN = 4
+FOLDER_NAME_FRAME_MOVE_X = 8
+FOLDER_NAME_FRAME_RESIZE_WAIT = 4
+FOLDER_NAME_FRAME_RESIZE = 8
+FOLDER_NAME_FRAME_ROT_WAIT = 4
+FOLDER_NAME_FRAME_ROT = 8
+
+# File Constants
 FILE_X_MARGIN = 0
 FILE_Y_MARGIN = 0.2
 FILE_Z_MARGIN = 0.4
@@ -118,7 +134,7 @@ def convert_folder_id(folder):
 
 def clear_old_breakpoints(fcurve):
     old_keyframe_index_list = []
-
+    
     for i, point in enumerate(fcurve.keyframe_points):
         if point.co[0] != START_FRAME:
             old_keyframe_index_list.append(i)
@@ -402,14 +418,64 @@ def setupFolders():
 
     for folder_name, pos in folder_pos_dic.items():
         
+        parent_folder_name, index, level, absolute_index = pos
+        folder_num_name  = folder_num_name_dic[folder_name]
+        
+        if level <= 1:
+            # Setup folder Name on Level 0, 1 Folders
+            # Get Folder Name Object's ID
+            folder_name_id = FOLDER_NAME_PREFIX + folder_num_name
+
+            # Set parent object
+            set_obj_parent(folder_num_name, folder_name_id)
+
+            # get fcurves
+            fcurves = bpy.data.objects[folder_name_id].animation_data.action.fcurves
+            
+            # Clear old breakpoints
+            clear_all_old_breakpoints(fcurves)
+            
+            # add Initial KeyFrame
+            frame = START_FRAME
+            add_location_key_frame(fcurves, frame, 0, 0, 0)
+            add_rotation_key_frame(fcurves, frame, 0, 0, 0)
+            add_scale_key_frame(fcurves, frame, FOLDER_NAME_SCALE_STOREGE, \
+                FOLDER_NAME_SCALE_STOREGE, FOLDER_NAME_SCALE_STOREGE)
+            
+            # add Move x Start key Frame
+            frame += (level + 1) * sum(folder_motion_list) + \
+                FOLDER_NAME_FRAME_START_MARGIN
+            add_location_key_frame(fcurves, frame, 0, 0, 0)
+            
+            # add Move x End key Frame
+            frame += FOLDER_NAME_FRAME_MOVE_X
+            add_location_key_frame(fcurves, frame, FOLDER_NAME_X_MARGIN, 0, 0)
+            
+            # add Resize wait key frame
+            frame += FOLDER_NAME_FRAME_RESIZE_WAIT
+            add_scale_key_frame(fcurves, frame, FOLDER_NAME_SCALE_STOREGE, \
+                FOLDER_NAME_SCALE_STOREGE, FOLDER_NAME_SCALE_STOREGE)
+            
+            # add Resize end key frame
+            frame += FOLDER_NAME_FRAME_RESIZE
+            add_scale_key_frame(fcurves, frame, 1, 1, 1)
+            
+            # add Rotation wait key frame
+            frame += FOLDER_NAME_FRAME_ROT_WAIT
+            add_rotation_key_frame(fcurves, frame, 0, 0, 0)
+
+            # add Rotaion end key frame
+            frame += FOLDER_NAME_FRAME_ROT
+            add_rotation_key_frame(fcurves, frame, FOLDER_NAME_ROT_X, 0, 0)
+
+            fcurves.update()
+
         # Skip root folder
         if folder_name == ROOT_FOLDER_SHORT_NAME:
             continue
         
-        parent_folder_name, index, level, absolute_index = pos
         
         # Calclate folder relative index
-        folder_num_name  = folder_num_name_dic[folder_name]
         parent_absolute_index = 0
         
         if parent_folder_name != "":
@@ -421,8 +487,6 @@ def setupFolders():
         # set parent object
         set_obj_parent(folder_num_name_dic[parent_folder_name], \
             folder_num_name)
-        
-        
         
         # calc start frame
         frame = START_FRAME + level * sum(folder_motion_list)
