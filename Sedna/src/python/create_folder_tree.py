@@ -14,6 +14,7 @@ import math
 # CONSTANT OF PARAMETERS
 FOLDER_SPLITTER = "_"
 SEED_FOLDER_NAME = 'Folder'
+SEED_FOLDER_LEAF_NAME = 'Folder.Leaf'
 SEED_FILE_NAME = 'File'
 SEED_BRANCH_NAME = 'Branch'
 ROOT_FOLDER = "C:/SRC/blender"
@@ -21,7 +22,7 @@ ROOT_FOLDER_ORG_NAME = "blender-2.79b"
 # DEF FOR TEST
 #ROOT_FOLDER = "C:/tmp/folder_tree_test/"
 #ROOT_FOLDER_ORG_NAME = "root"
-ROOT_FOLDER_SHORT_NAME = "bl"
+ROOT_FOLDER_SHORT_NAME = "Folder_bl"
 
 ACTION_SUFFIX = 'Action'
 SEED_ACTION = 'FolderAction'
@@ -32,6 +33,7 @@ NEW_FILE_NAME = 'File_'
 FILE_ZFILL = 8
 NEW_BRANCH_NAME = 'Branch_'
 NEW_BRANCH_H_NAME = 'Branch_h_'
+NEW_FOLDER_LEAF_NAME = "Folder.Leaf_"
 
 START_FRAME = 3000
 FPS = 12
@@ -52,6 +54,8 @@ FOLDER_FRAME_EXPAND_Z_WAIT = 0
 FOLDER_FRAME_EXPAND_Z = 1
 FOLDER_FRAME_EXPAND_X_WAIT = 1
 FOLDER_FRAME_EXPAND_X = 6
+FOLDER_FRAME_OPEN_WAIT = 1
+FOLDER_FRAME_OPEN= 4
 folder_motion_list = [
       FOLDER_FRAME_START_MARGIN
     , FOLDER_FRAME_GO_OUT
@@ -59,12 +63,21 @@ folder_motion_list = [
     , FOLDER_FRAME_RESIZE
     , FOLDER_FRAME_EXPAND_Z_WAIT
     , FOLDER_FRAME_EXPAND_X_WAIT
-    , FOLDER_FRAME_EXPAND_X]
+    , FOLDER_FRAME_EXPAND_X
+    ]
+
+# Folder.Leaf Constants
+FOLDER_REAF_X = 0
+FOLDER_REAF_Y = -0.04
+FOLDER_REAF_Z = -0.15682
+FOLDER_REAF_OPEN = math.pi / 4
+
 
 # Folder Name Constants
 FOLDER_NAME_PREFIX = "FolderName_"
 
 FOLDER_NAME_X_MARGIN = -0.2
+FOLDER_NAME_Y_MARGIN = -0.2
 
 FOLDER_NAME_SCALE_STOREGE = 0.03
 FOLDER_NAME_ROT_X = -1 * math.pi / 9
@@ -243,6 +256,9 @@ def create_action(object_name):
         new_action = bpy.data.actions[SEED_ACTION].copy()
         new_action.name = action_name
         bpy.data.objects[object_name].animation_data.action = new_action
+    else:
+        bpy.data.objects[object_name].animation_data.action = \
+            bpy.data.actions[action_name]
 
 def get_branch_num_name(folder_name):
     folder_num_name = folder_num_name_dic[folder_name]
@@ -252,6 +268,9 @@ def get_branch_h_num_name(folder_name):
     folder_num_name = folder_num_name_dic[folder_name]
     return folder_num_name.replace(NEW_FOLDER_NAME, NEW_BRANCH_H_NAME)
 
+def get_folder_leaf_num_name(folder_name):
+    folder_num_name = folder_num_name_dic[folder_name]
+    return folder_num_name.replace(NEW_FOLDER_NAME, NEW_FOLDER_LEAF_NAME)
 
 def get_folder_index(folder_num_name):
     if folder_num_name == ROOT_FOLDER_SHORT_NAME:
@@ -293,6 +312,48 @@ def create_folder_mesh(parent_folder_name, folder_name):
     
     # set start scale
     add_scale_key_frame(act.fcurves, START_FRAME, SCALE_STORAGE, SCALE_STORAGE, SCALE_STORAGE)
+
+
+def create_folder_leaf_mesh(parent_folder_name, folder_name):
+    """
+    create folder leaf mesh
+    """
+    
+    # GetName
+    folder_leaf_num_name = get_folder_leaf_num_name(folder_name)
+
+    # delete org
+    # Enable hire when you want to delete objects 
+    #if bpy.data.objects.find(folder_leaf_num_name) > 0:    
+    #    bpy.ops.object.select_all(action='DESELECT')
+    #    bpy.data.objects[num_name].select = True
+    #    bpy.ops.object.delete()
+
+    dupObject(SEED_FOLDER_LEAF_NAME , folder_leaf_num_name)
+    
+    print(folder_leaf_num_name)
+    set_obj_parent(folder_num_name_dic[folder_name], folder_leaf_num_name)
+    
+    # Enable Render
+    bpy.data.objects[folder_leaf_num_name].hide_render = False
+    
+    # Create new Action on new Object
+    create_action(folder_leaf_num_name)
+    
+    act = bpy.data.objects[folder_leaf_num_name].animation_data.action
+
+    # remove old keyframes
+    clear_all_old_breakpoints(act.fcurves)
+
+    # set start location
+    add_location_key_frame(act.fcurves, START_FRAME, FOLDER_REAF_X, \
+        FOLDER_REAF_Y, FOLDER_REAF_Z)
+
+    # set start rotation
+    add_rotation_key_frame(act.fcurves, START_FRAME, 0, 0, 0)
+    
+    # set start scale
+    add_scale_key_frame(act.fcurves, START_FRAME, 1, 1, 1)
 
 
 def create_branch_mesh(parent_folder_name, folder_name):
@@ -365,7 +426,7 @@ def create_file_mesh(file_name):
     #    bpy.ops.object.select_all(action='DESELECT')
     #    bpy.data.objects[file_name].select = True
     #    bpy.ops.object.delete()
-        
+
     # duplicate object
     dupObject(SEED_FILE_NAME , file_name)
     
@@ -427,6 +488,7 @@ def func_main(arg, level_list):
             folder_id = parent_folder + FOLDER_SPLITTER + folder_id
 
         create_folder_mesh(parent_folder, folder_id)
+        create_folder_leaf_mesh(parent_folder, folder_id)
         create_branch_mesh(parent_folder, folder_id)
         create_branch_h_mesh(parent_folder, folder_id)
         
@@ -490,9 +552,7 @@ def add_keyframe_point(fcurve, frame, value):
     fcurve.keyframe_points[index].co =  frame, value
     fcurve.keyframe_points[index].handle_left = frame - 0.5, value
     fcurve.keyframe_points[index].handle_right = frame + 0.5, value
-        
 
-    
 
 def setupFolders():
 
@@ -537,7 +597,8 @@ def setupFolders():
             
             # add Move x End key Frame
             frame += FOLDER_NAME_FRAME_MOVE_X
-            add_location_key_frame(fcurves, frame, FOLDER_NAME_X_MARGIN, 0, 0)
+            add_location_key_frame(fcurves, frame, FOLDER_NAME_X_MARGIN, \
+                FOLDER_NAME_Y_MARGIN, 0)
             
             # add Resize wait key frame
             frame += FOLDER_NAME_FRAME_RESIZE_WAIT
@@ -584,7 +645,7 @@ def setupFolders():
         if parent_folder_name != ROOT_FOLDER_SHORT_NAME :
             parent_folder_index = get_folder_index(folder_num_name_dic[parent_folder_name])
 
-        frame = START_FRAME + parent_folder_index * FOLDER_FRAME_EXPAND_Z \
+        frame = START_FRAME + (parent_folder_index + 1) * FOLDER_FRAME_EXPAND_Z \
             + sum(folder_motion_list)
         
         # get fcurves
@@ -647,7 +708,7 @@ def setupFolders():
         add_location_key_frame(folder_fcurves, frame, FOLDER_X_MARGIN, 0, \
             FOLDER_Z_MARGIN * relative_index)
 
-            
+        
         # write log
         text_file.write(folder_num_name + " RelativeIndex:" + str(relative_index).zfill(4) \
             + " Level:" + str(level).zfill(3) \
@@ -667,17 +728,27 @@ def setupFiles():
         
         file_num_name, file_cnt = val
 
-        ## write log
-        #text_file.write(file_num_name + ":" + str(file_cnt).zfill(4) + '\n')
-        
+        folder_leaf_num_name = get_folder_leaf_num_name(parent_folder)
+
         # Set parent object
         set_obj_parent(folder_num_name_dic[parent_folder], file_num_name)
 
         # get fcurves
         fcurves = bpy.data.objects[file_num_name].animation_data.action.fcurves
+        folder_leaf_fcurves = \
+            bpy.data.objects[folder_leaf_num_name].animation_data.action.fcurves
 
         # get start frame
         frame = folder_end_frame_dic[parent_folder]
+        
+        # add open wait key_frame
+        frame += FOLDER_FRAME_OPEN_WAIT
+        add_rotation_key_frame(folder_leaf_fcurves, frame, 0, 0, 0)
+        
+        # add open key_frame
+        frame += FOLDER_FRAME_OPEN
+        add_rotation_key_frame(folder_leaf_fcurves, frame, FOLDER_REAF_OPEN, \
+             0, 0)
         
         # add move start key frame
         frame += FILE_FRAME_START_MARGIN
