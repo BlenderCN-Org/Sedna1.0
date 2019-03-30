@@ -46,24 +46,26 @@ FOLDER_Y_MARGIN = 0.7
 FOLDER_Z_MARGIN = 0.48
 FOLDER_LEVEL1_Y_MARGIN = 2
 
+FOLDER_STORAGE_SCALE = 0.05
+
 FOLDER_FRAME_START_MARGIN = 1
-FOLDER_FRAME_GO_OUT = 4
-FOLDER_FRAME_RESIZE_WAIT = 1
-FOLDER_FRAME_RESIZE = 4
 FOLDER_FRAME_EXPAND_Z_WAIT = 0
 FOLDER_FRAME_EXPAND_Z = 1
 FOLDER_FRAME_EXPAND_X_WAIT = 1
 FOLDER_FRAME_EXPAND_X = 6
+FOLDER_FRAME_GO_OUT = 4
+FOLDER_FRAME_RESIZE_WAIT = 1
+FOLDER_FRAME_RESIZE = 4
 FOLDER_FRAME_OPEN_WAIT = 1
 FOLDER_FRAME_OPEN= 4
 folder_motion_list = [
       FOLDER_FRAME_START_MARGIN
-    , FOLDER_FRAME_GO_OUT
-    , FOLDER_FRAME_RESIZE_WAIT
-    , FOLDER_FRAME_RESIZE
     , FOLDER_FRAME_EXPAND_Z_WAIT
     , FOLDER_FRAME_EXPAND_X_WAIT
     , FOLDER_FRAME_EXPAND_X
+    , FOLDER_FRAME_GO_OUT
+    , FOLDER_FRAME_RESIZE_WAIT
+    , FOLDER_FRAME_RESIZE
     ]
 
 # Folder.Leaf Constants
@@ -290,7 +292,7 @@ def create_folder_mesh(parent_folder_name, folder_name):
     # delete org
     # Enable hire when you want to delete objects 
     #if bpy.data.objects.find(num_name) > 0:    
-    #    bpy.ops.object.select_all(action='DESELECT')
+    #    bpy.ops.object.select_all(action= 'DESELECT')
     #    bpy.data.objects[num_name].select = True
     #    bpy.ops.object.delete()
 
@@ -311,7 +313,8 @@ def create_folder_mesh(parent_folder_name, folder_name):
     add_location_key_frame(act.fcurves, START_FRAME, 0, 0, 0)
     
     # set start scale
-    add_scale_key_frame(act.fcurves, START_FRAME, SCALE_STORAGE, SCALE_STORAGE, SCALE_STORAGE)
+    add_scale_key_frame(act.fcurves, START_FRAME, FOLDER_STORAGE_SCALE,\
+        FOLDER_STORAGE_SCALE, FOLDER_STORAGE_SCALE)
 
 
 def create_folder_leaf_mesh(parent_folder_name, folder_name):
@@ -661,25 +664,6 @@ def setupFolders():
         add_rotation_key_frame(brnc_h_fcurves, frame, 0, math.pi / 2, 0)
         add_location_key_frame(folder_fcurves, frame, 0, 0, 0)
             
-        # add go out key_frame
-        frame += FOLDER_FRAME_GO_OUT
-        add_location_key_frame(branch_fcurves, frame, 0, 0, BRANCH_Z_MARGIN)
-        add_scale_key_frame(brnc_h_fcurves, frame, 1, 1, 1)
-        add_location_key_frame(brnc_h_fcurves, frame, 0, 0, BRANCH_Z_MARGIN)
-        add_scale_key_frame(brnc_h_fcurves, frame, 1, 1, 1)
-        add_location_key_frame(folder_fcurves, frame, 0, 0, BRANCH_Z_MARGIN)
-
-        # add resize wait key_frame
-        frame += FOLDER_FRAME_RESIZE_WAIT
-        add_location_key_frame(folder_fcurves, frame, 0, 0, BRANCH_Z_MARGIN)
-        add_scale_key_frame(folder_fcurves, frame, SCALE_STORAGE, \
-            SCALE_STORAGE, SCALE_STORAGE)
-        
-        # add resize key_frame
-        frame += FOLDER_FRAME_RESIZE
-        add_location_key_frame(folder_fcurves, frame, 0, 0, FOLDER_Z_MARGIN)
-        add_scale_key_frame(folder_fcurves, frame, SCALE_NORMAL, \
-            SCALE_NORMAL, SCALE_NORMAL)
 
         # add expand z wait key_frame
         frame += FOLDER_FRAME_EXPAND_Z_WAIT
@@ -707,6 +691,26 @@ def setupFolders():
             FOLDER_X_MARGIN * 100)
         add_location_key_frame(folder_fcurves, frame, FOLDER_X_MARGIN, 0, \
             FOLDER_Z_MARGIN * relative_index)
+            
+        # add go out key_frame
+        frame += FOLDER_FRAME_GO_OUT
+        add_location_key_frame(branch_fcurves, frame, 0, 0, BRANCH_Z_MARGIN)
+        add_scale_key_frame(brnc_h_fcurves, frame, 1, 1, 1)
+        add_location_key_frame(brnc_h_fcurves, frame, 0, 0, BRANCH_Z_MARGIN)
+        add_scale_key_frame(brnc_h_fcurves, frame, 1, 1, 1)
+        add_location_key_frame(folder_fcurves, frame, 0, 0, BRANCH_Z_MARGIN)
+
+        # add resize wait key_frame
+        frame += FOLDER_FRAME_RESIZE_WAIT
+        add_location_key_frame(folder_fcurves, frame, 0, 0, BRANCH_Z_MARGIN)
+        add_scale_key_frame(folder_fcurves, frame, FOLDER_STORAGE_SCALE, \
+            FOLDER_STORAGE_SCALE, FOLDER_STORAGE_SCALE)
+        
+        # add resize key_frame
+        frame += FOLDER_FRAME_RESIZE
+        add_location_key_frame(folder_fcurves, frame, 0, 0, FOLDER_Z_MARGIN)
+        add_scale_key_frame(folder_fcurves, frame, SCALE_NORMAL, \
+            SCALE_NORMAL, SCALE_NORMAL)
 
         
         # write log
