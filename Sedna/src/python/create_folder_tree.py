@@ -562,7 +562,7 @@ def add_keyframe_point(fcurve, frame, value):
     fcurve.keyframe_points[index].handle_right = frame + 0.5, value
 
 
-def setupFolders():
+def setupFolders(max_start_frame):
 
     # reset root folder size
     act = bpy.data.objects[ROOT_FOLDER_SHORT_NAME].animation_data.action
@@ -675,49 +675,57 @@ def setupFolders():
         add_location_key_frame(brnc_h_fcurves, frame, 0, 0, 0)
         add_location_key_frame(folder_fcurves, frame, 0, 0, 0)
 
+        # calc 1st Z add_location_key_frame
+        z_loc_0010 = FOLDER_Z_MARGIN * index
         # add expand z end key_frame
         frame += FOLDER_FRAME_EXPAND_Z
-        add_scale_key_frame(branch_fcurves, frame, 1, 1, \
-            (FOLDER_Z_MARGIN * relative_index)* 100)
-        add_location_key_frame(brnc_h_fcurves, frame, 0, 0, \
-            FOLDER_Z_MARGIN * relative_index)
-        add_location_key_frame(folder_fcurves, frame, 0, 0, \
-            FOLDER_Z_MARGIN * relative_index)
+        add_scale_key_frame(branch_fcurves, frame, 1, 1, z_loc_0010 * 100)
+        add_location_key_frame(brnc_h_fcurves, frame, 0, 0, z_loc_0010)
+        add_location_key_frame(folder_fcurves, frame, 0, 0, z_loc_0010)
 
         # add expand x wait key_frame
         frame += FOLDER_FRAME_EXPAND_X_WAIT
         add_scale_key_frame(brnc_h_fcurves, frame, 1, 1, 1)
-        add_location_key_frame(folder_fcurves, frame, 0, 0, \
-            FOLDER_Z_MARGIN * relative_index)
+        add_location_key_frame(folder_fcurves, frame, 0, 0, z_loc_0010)
 
         # add expand x end key_frame
         frame += FOLDER_FRAME_EXPAND_X
         add_scale_key_frame(brnc_h_fcurves, frame, 1, 1, \
             FOLDER_X_MARGIN * 100)
         add_location_key_frame(folder_fcurves, frame, FOLDER_X_MARGIN, 0, \
-            FOLDER_Z_MARGIN * relative_index)
+            z_loc_0010)
 
         # add go out key_frame
         frame += FOLDER_FRAME_GO_OUT
         add_location_key_frame(folder_fcurves, frame, \
-            FOLDER_X_MARGIN + FOLDER_X_POS_START, 0, \
-            FOLDER_Z_MARGIN * relative_index)
+            FOLDER_X_MARGIN + FOLDER_X_POS_START, 0, z_loc_0010)
 
         # add resize wait key_frame
         frame += FOLDER_FRAME_RESIZE_WAIT
         add_location_key_frame(folder_fcurves, frame,
             FOLDER_X_MARGIN + FOLDER_X_POS_START, 0, \
-            FOLDER_Z_MARGIN * relative_index)
+            z_loc_0010)
         add_scale_key_frame(folder_fcurves, frame, FOLDER_STORAGE_SCALE, \
             FOLDER_STORAGE_SCALE, FOLDER_STORAGE_SCALE)
 
         # add resize key_frame
         frame += FOLDER_FRAME_RESIZE
         add_location_key_frame(folder_fcurves, frame, \
-            FOLDER_X_MARGIN + FOLDER_X_POS_END, \
-            0, FOLDER_Z_MARGIN * relative_index)
+            FOLDER_X_MARGIN + FOLDER_X_POS_END, 0, z_loc_0010)
         add_scale_key_frame(folder_fcurves, frame, SCALE_NORMAL, \
             SCALE_NORMAL, SCALE_NORMAL)
+
+        # add folder motion end frame to dic
+        folder_end_frame_dic[folder_name] = frame
+
+        # add Z move end key frame
+        z_loc_0020 = FOLDER_Z_MARGIN * relative_index
+        frame = max_start_frame
+        add_location_key_frame(folder_fcurves, frame, \
+            FOLDER_X_MARGIN + FOLDER_X_POS_END, 0, z_loc_0020)
+        add_location_key_frame(brnc_h_fcurves, frame, 0, 0, z_loc_0020)
+        add_scale_key_frame(branch_fcurves, frame, 1, 1, z_loc_0020 * 100)
+
 
 
         # write log
@@ -732,8 +740,6 @@ def setupFolders():
         branch_fcurves.update()
         folder_fcurves.update()
 
-        # add folder motion end frame to dic
-        folder_end_frame_dic[folder_name] = frame
 
 
 def setupFiles():
@@ -788,7 +794,7 @@ def setupFiles():
         # add x rot end key frame
         frame += FILE_FRAME_X_ROT
         add_location_key_frame(fcurves, frame, FILE_X_MARGIN, 0, 0)
-        add_rotation_key_frame(fcurves, frame, 0, math.pi / 2, 0 )
+        add_rotation_key_frame(fcurves, frame, math.pi, math.pi / 2, 0 )
 
         # add y expand wait key frame
         frame += FILE_FRAME_Y_EXPAND_WAIT
@@ -807,7 +813,16 @@ def setupFiles():
 print("### start ###")
 create_folder_mesh("", ROOT_FOLDER_SHORT_NAME)
 func_main(file_list.pop(0), [])
-setupFolders()
+
+# calc max start frame
+max_start_frame = 0
+for folder_name, pos in folder_pos_dic.items():
+    parent_folder_name, index, level, absolute_index = pos
+    frame = START_FRAME + (level + index) * sum(folder_motion_list)
+    if frame > max_start_frame:
+        max_start_frame = frame
+
+setupFolders(max_start_frame)
 setupFiles()
 text_file.close()
 print("### end ###")
