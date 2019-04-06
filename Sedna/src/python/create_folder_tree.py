@@ -26,6 +26,7 @@ ROOT_FOLDER_SHORT_NAME = "Folder_0001"
 
 ACTION_SUFFIX = 'Action'
 SEED_ACTION = 'FolderAction'
+FILE_SEED_ACTION = 'FileAction'
 
 NEW_FOLDER_NAME = 'Folder_'
 FOLDER_ZFILL = 4
@@ -123,6 +124,7 @@ F_CURVE_Z_ROT = 5
 F_CURVE_X_SCA = 6
 F_CURVE_Y_SCA = 7
 F_CURVE_Z_SCA = 8
+F_CURVE_ARRAY = 9
 
 # Global dic
 file_parent_dic = {}
@@ -187,6 +189,10 @@ def clear_all_old_breakpoints(fcurves):
     clear_old_breakpoints(fcurves[F_CURVE_Y_SCA])
     clear_old_breakpoints(fcurves[F_CURVE_Z_SCA])
 
+def clear_file_all_old_breakpoints(fcurves):
+    clear_all_old_breakpoints(fcurves)
+    clear_old_breakpoints(fcurves[F_CURVE_ARRAY])
+
 def add_location_key_frame(fcurves, frame, x, y, z):
     add_keyframe_point(fcurves[F_CURVE_X_LOC], frame, x)
     add_keyframe_point(fcurves[F_CURVE_Y_LOC], frame, y)
@@ -201,6 +207,9 @@ def add_scale_key_frame(fcurves, frame, x, y, z):
     add_keyframe_point(fcurves[F_CURVE_X_SCA], frame, x)
     add_keyframe_point(fcurves[F_CURVE_Y_SCA], frame, y)
     add_keyframe_point(fcurves[F_CURVE_Z_SCA], frame, z)
+
+def add_array_key_frame(fcurves, frame, val):
+    add_keyframe_point(fcurves[F_CURVE_ARRAY], frame, val)
 
 
 # get file list
@@ -266,6 +275,20 @@ def create_action(object_name):
     else:
         bpy.data.objects[object_name].animation_data.action = \
             bpy.data.actions[action_name]
+
+def create_file_action(object_name):
+    action_name = object_name + ACTION_SUFFIX
+    # Enable Hire when f-cureve inclease .etc
+    #if bpy.data.actions.find(action_name) > 0:
+    #    bpy.data.actions.remove(bpy.data.actions[action_name])
+    if bpy.data.actions.find(action_name) < 0:
+        new_action = bpy.data.actions[FILE_SEED_ACTION].copy()
+        new_action.name = action_name
+        bpy.data.objects[object_name].animation_data.action = new_action
+    else:
+        bpy.data.objects[object_name].animation_data.action = \
+            bpy.data.actions[action_name]
+
 
 def get_branch_num_name(folder_name):
     folder_num_name = folder_num_name_dic[folder_name]
@@ -442,12 +465,12 @@ def create_file_mesh(file_name):
     bpy.data.objects[file_name].hide_render = False
 
     # Create new Action on new Object
-    create_action(file_name)
+    create_file_action(file_name)
 
     act = bpy.data.objects[file_name].animation_data.action
 
     # remove old keyframes
-    clear_all_old_breakpoints(act.fcurves)
+    clear_file_all_old_breakpoints(act.fcurves)
 
     # set start location
     add_location_key_frame(act.fcurves, START_FRAME, 0, 0, 0)
@@ -458,6 +481,8 @@ def create_file_mesh(file_name):
     # set start scale
     add_scale_key_frame(act.fcurves, START_FRAME, SCALE_STORAGE, SCALE_STORAGE, SCALE_STORAGE)
 
+    # set start array count
+    add_array_key_frame(act.fcurves, START_FRAME, 1)
 
 def set_obj_parent(parent_name, obj_name):
     """
@@ -798,13 +823,11 @@ def setupFiles():
 
         # add y expand wait key frame
         frame += FILE_FRAME_Y_EXPAND_WAIT
-        add_scale_key_frame(fcurves, frame, SCALE_NORMAL, SCALE_NORMAL, \
-            SCALE_NORMAL)
+        add_array_key_frame(fcurves, frame, 1)
 
         # add y expand end key frame
         frame += FILE_FRAME_Y_EXPAND
-        add_scale_key_frame(fcurves, frame, SCALE_NORMAL, \
-            SCALE_NORMAL * file_cnt, SCALE_NORMAL)
+        add_array_key_frame(fcurves, frame, file_cnt)
 
         # update fcurve
         fcurves.update()
