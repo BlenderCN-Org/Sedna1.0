@@ -90,7 +90,7 @@ FOLDER_NAME_Y_MARGIN = -0.2
 FOLDER_NAME_SCALE_STOREGE = 0.03
 FOLDER_NAME_ROT_X = -1 * math.pi / 9
 
-FOLDER_NAME_FRAME_START_MARGIN = 4
+FOLDER_NAME_FRAME_START_MARGIN = 48
 FOLDER_NAME_FRAME_MOVE_X = 8
 FOLDER_NAME_FRAME_RESIZE_WAIT = 4
 FOLDER_NAME_FRAME_RESIZE = 8
@@ -702,6 +702,9 @@ def setupFolders(max_start_frame):
 
         # calc 1st Z add_location_key_frame
         z_loc_0010 = FOLDER_Z_MARGIN * index
+        if folder_name == ROOT_FOLDER_SHORT_NAME:
+            z_loc_0010 = FOLDER_Z_MARGIN * 2
+
         # add expand z end key_frame
         frame += FOLDER_FRAME_EXPAND_Z
         add_scale_key_frame(branch_fcurves, frame, 1, 1, z_loc_0010 * 100)
@@ -745,6 +748,9 @@ def setupFolders(max_start_frame):
 
         # add Z move end key frame
         z_loc_0020 = FOLDER_Z_MARGIN * relative_index
+        if folder_name == ROOT_FOLDER_SHORT_NAME:
+            z_loc_0020 = FOLDER_Z_MARGIN * 3
+
         frame = max_start_frame
         add_location_key_frame(folder_fcurves, frame, \
             FOLDER_X_MARGIN + FOLDER_X_POS_END, 0, z_loc_0020)
