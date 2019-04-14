@@ -749,7 +749,7 @@ def setupFolders(max_start_frame):
         # add Z move end key frame
         z_loc_0020 = FOLDER_Z_MARGIN * relative_index
         if folder_name == ROOT_FOLDER_SHORT_NAME:
-            z_loc_0020 = FOLDER_Z_MARGIN * 3
+            z_loc_0020 = FOLDER_Z_MARGIN * 2
 
         frame = max_start_frame
         add_location_key_frame(folder_fcurves, frame, \
