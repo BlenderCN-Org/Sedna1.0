@@ -38,8 +38,9 @@ def render(fps, frame_step, frame_start, frame_end, filepath, camera):
     bpy.ops.render.render(animation=True)
 
     if TEST_MODE:
-        bpy.context.scene.frame_start = frame_end
-        bpy.context.scene.frame_end = frame_end
+        middle_frame = math.floor((frame_start + frame_end) / 2)
+        bpy.context.scene.frame_start = middle_frame
+        bpy.context.scene.frame_end = middle_frame
         test_print_cnt += 1
         bpy.data.scenes[CURRENT_SCENE].render.filepath = TEST_PATH + \
             str(test_print_cnt).zfill(4) + "_camera_" + camera + "_" + \
@@ -65,6 +66,14 @@ render(24, 2, 1554, 1578, "//..\\renderResults\\Main\\", "Camera.Main")
 render(24, 2, 1579, 1676, "//..\\renderResults\\Main\\", "Camera.Main")
 render(24, 2, 1677, 1797, "//..\\renderResults\\Main\\", "Camera.Main")
 render(24, 2, 1798, 1870, "//..\\renderResults\\Main\\", "Camera.Main")
+
+render(24, 2, 3000, 3024, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, 2, 3025, 3128, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, 2, 3129, 3256, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, 2, 3256, 4000, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, 2, 3500, 4000, "//..\\renderResults\\Middle\\", "Camera.Middle")
+render(24, 2, 3100, 3500, "//..\\renderResults\\Dolly\\", "Camera.Dolly")
+
 
 render(24, 2, 4800, 5000, "//..\\renderResults\\Long\\", "Camera.Long")
 
