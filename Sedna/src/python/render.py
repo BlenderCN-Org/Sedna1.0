@@ -13,10 +13,10 @@ import math
 
 # CONSTANTS
 CURRENT_SCENE = "Root"
-TEST_MODE = True
+TEST_MODE = False
 test_print_cnt = 0
 TEST_PATH = "//..\\renderResults\\TestPrint\\Test_"
-FPS = 1
+FPS = 10
 
 def render(fps, frame_step, frame_start, frame_end, filepath, camera):
     global test_print_cnt
@@ -76,7 +76,7 @@ render(24, FPS, 3500, 4000, "//..\\renderResults\\Middle\\", "Camera.Middle")
 render(24, FPS, 3100, 3500, "//..\\renderResults\\Dolly\\", "Camera.Dolly")
 
 
-render(24, FPS, 4800, 5000, "//..\\renderResults\\Long\\", "Camera.Long")
+render(24, FPS, 4800, 5000, "//..\\renderResults\\Long\\", "Camera .Long")
 
 print("######## END   ########")
 
