@@ -16,7 +16,7 @@ CURRENT_SCENE = "Root"
 TEST_MODE = True
 test_print_cnt = 0
 TEST_PATH = "//..\\renderResults\\TestPrint\\Test_"
-FRAME_STEP = 10
+FRAME_STEP = 2
 
 def render(fps, frame_step, frame_start, frame_end, filepath, camera):
     global test_print_cnt
@@ -58,23 +58,26 @@ print("######## START ########")
 
 #bpy.context.window.screen = bpy.data.screens['Render']
 
-#render(24, FRAME_STEP, 1000, 1084, "//..\\renderResults\\Main\\", "Camera.Main")
-#render(24, FRAME_STEP, 1085, 1182, "//..\\renderResults\\Main\\", "Camera.Main")
-#render(24, FRAME_STEP, 1183, 1272, "//..\\renderResults\\Main\\", "Camera.Main")
-#render(24, FRAME_STEP, 1426, 1498, "//..\\renderResults\\Main\\", "Camera.Main")
-#render(24, FRAME_STEP, 1499, 1553, "//..\\renderResults\\Main\\", "Camera.Main")
-#render(24, FRAME_STEP, 1554, 1578, "//..\\renderResults\\Main\\", "Camera.Main")
-#render(24, FRAME_STEP, 1579, 1676, "//..\\renderResults\\Main\\", "Camera.Main")
-#render(24, FRAME_STEP, 1677, 1797, "//..\\renderResults\\Main\\", "Camera.Main")
-#render(24, FRAME_STEP, 1798, 1870, "//..\\renderResults\\Main\\", "Camera.Main")
+bpy.context.scene.render.resolution_percentage = 100
 
-#render(24, FRAME_STEP, 3000, 3024, "//..\\renderResults\\Main\\", "Camera.Main")
-#render(24, FRAME_STEP, 3025, 3128, "//..\\renderResults\\Main\\", "Camera.Main")
-#render(24, FRAME_STEP, 3129, 3256, "//..\\renderResults\\Main\\", "Camera.Main")
-#render(24, FRAME_STEP, 3256, 4000, "//..\\renderResults\\Main\\", "Camera.Main")
-#render(24, FRAME_STEP, 3000, 3500, "//..\\renderResults\\Middle\\", "Camera.Middle")
-#render(24, FRAME_STEP, 3501, 4000, "//..\\renderResults\\Middle\\", "Camera.Middle")
-#render(24, FRAME_STEP, 3100, 3500, "//..\\renderResults\\Dolly\\", "Camera.Dolly")
+render(24, FRAME_STEP, 1000, 1048, "//..\\renderResults\\Middle\\", "Camera.Middle")
+render(24, FRAME_STEP, 1000, 1084, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, FRAME_STEP, 1085, 1182, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, FRAME_STEP, 1183, 1272, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, FRAME_STEP, 1426, 1498, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, FRAME_STEP, 1499, 1553, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, FRAME_STEP, 1554, 1578, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, FRAME_STEP, 1579, 1676, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, FRAME_STEP, 1677, 1797, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, FRAME_STEP, 1798, 1870, "//..\\renderResults\\Main\\", "Camera.Main")
+
+render(24, FRAME_STEP, 3000, 3024, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, FRAME_STEP, 3025, 3128, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, FRAME_STEP, 3129, 3256, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, FRAME_STEP, 3256, 4000, "//..\\renderResults\\Main\\", "Camera.Main")
+render(24, FRAME_STEP, 3000, 3500, "//..\\renderResults\\Middle\\", "Camera.Middle")
+render(24, FRAME_STEP, 3501, 4000, "//..\\renderResults\\Middle\\", "Camera.Middle")
+render(24, FRAME_STEP, 3100, 3500, "//..\\renderResults\\Dolly\\", "Camera.Dolly")
 render(24, FRAME_STEP, 4800, 5000, "//..\\renderResults\\Long\\", "Camera.Long")
 
 print("######## END   ########")
