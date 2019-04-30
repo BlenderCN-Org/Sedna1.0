@@ -53,6 +53,10 @@ This software is released under the MIT License, see License.txt.
 このソフトウェアは、MITライセンスのもとで公開されています。License.txtを見てください。
 ### ※ フォントファイル等の同梱ファイル/ソフトについては，それぞれのライセンスに従ってください。
 
+### ※ Blender2.8には未対応です。  
+本プロジェクトの.blendファイルをBlender2.8で開くことは可能ですが，  
+Blender2.8で一度保存した後にBlender2.8でも2.79でもファイルを開けなくなる現象があります。
+
 ## 管理情報
 ### スプレッドシート
 * [作業日次管理](https://docs.google.com/spreadsheets/d/1OcrweKcC3Z_rvI6SDFZMefqk4avaaWCaK5QpJZbVDw4/edit?usp=sharing)
